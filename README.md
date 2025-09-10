@@ -1,15 +1,23 @@
-# General Information
-This is the source code for https://pekora.zip revival multi-client bootstrapper.
-- **why?:** Because several people were saying that pekora is a **RAT (Remote Access Trojan)**, by open sourcing we are proving ourselves that we aren't a RAT and there's nothing to worry about.
+# Korone Bootstrapper
 
-# How to build
+This repository contains the source code for the [Korone Bootstrapper](https://pekora.zip).
 
-### Requirements:
-1. **Visual Studio 2022**
-2. **[vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-vs?pivots=shell-powershell)**.
+We are open sourcing this project to demonstrate transparency. Some users have mistakenly labeled Korone as a **RAT (Remote Access Trojan)** this code proves that the bootstrapper is completely safe.
 
-### Steps to Build The Bootstrapper:
-1. **Open the solution** in **Visual Studio**.
-2. **Set the configuration** to **Release | x86** or **Release | x64**.
-4. **Build BootstrapperClient**.
-5. **Done**
+---
+
+## Requirements
+
+Before building, make sure you have the following installed:
+
+1. **[Visual Studio 2022](https://visualstudio.microsoft.com/downloads/)**
+2. **[vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-vs?pivots=shell-powershell)**
+
+---
+
+## Building
+
+1. Clone the repository and open the solution in **Visual Studio 2022**.
+2. Select the **configuration**: `Release | x86` or `Release | x64`.
+3. Build the `BootstrapperClient` project.
+4. Thats it! The compiled binary will be ready in your output directory.
