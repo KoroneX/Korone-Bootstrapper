@@ -70,13 +70,13 @@ private:
 #define FIREFOXREGKEY               "@nsroblox.pekora.zip/launcher"
 #define FIREFOXREGKEY64             "@nsroblox.pekora.zip/launcher64"
 
-#define PLAYERLINKNAME_CUR          "Pekora Player"
-#define PLAYERLINKNAMELEGACY        "Play Pekora"
+#define PLAYERLINKNAME_CUR          "Korone Player"
+#define PLAYERLINKNAMELEGACY        "Play Korone"
 
 // MFC Studio names
 #define STUDIOEXENAME               "ProjectXStudioBeta.exe"
 #define STUDIOBOOTSTAPPERNAME       "ProjectXStudioBeta.exe"
-#define STUDIOLINKNAMELEGACY        "Pekora Studio"    // wrong case
+#define STUDIOLINKNAMELEGACY        "Korone Studio"    // wrong case
 
 // QT Studio names
 #define STUDIOQTEXENAME             "ProjectXStudioBeta.exe"

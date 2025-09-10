@@ -222,7 +222,7 @@ CRegKey GetKey(CString& out_operation, bool isStudioKey, bool is64bits)
 				launchMode = Play;
 			}
 
-			operation = "Start Pekora.exe";
+			operation = "Start Korone.exe";
 
 			TCHAR cmd[2048] = {0};
 
@@ -320,7 +320,7 @@ CRegKey GetKey(CString& out_operation, bool isStudioKey, bool is64bits)
 	try
 	{
 		ATL::CPath path = loadRobloxPath(operation, false);
-		operation = "Start Pekora.exe";
+		operation = "Start Korone.exe";
 
 		TCHAR cmd[2048];
 #ifdef UNICODE
@@ -414,7 +414,7 @@ CRegKey GetKey(CString& out_operation, bool isStudioKey, bool is64bits)
 	HRESULT hr = S_OK;
 	try
 	{
-		operation = "Update Pekora.exe";
+		operation = "Update Korone.exe";
 
 		ATL::CPath path;
 		{
@@ -459,7 +459,7 @@ CRegKey GetKey(CString& out_operation, bool isStudioKey, bool is64bits)
 	(*pVal) = VARIANT_FALSE;
 	try
 	{
-		operation = "IsUpToDate Pekora.exe";
+		operation = "IsUpToDate Korone.exe";
 
 		ATL::CPath path;
 		{

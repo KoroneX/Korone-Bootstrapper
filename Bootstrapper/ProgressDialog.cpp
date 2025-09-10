@@ -370,12 +370,12 @@ void CProgressDialog::DisplayError(const char* message, const char* exceptionTex
 		text += "\n\nDetails: ";
 		text += exceptionText;
 	}
-	MessageBox(convert_s2w(text).c_str(), _T("Pekora"), MB_OK | MB_ICONERROR);
+	MessageBox(convert_s2w(text).c_str(), _T("Korone"), MB_OK | MB_ICONERROR);
 }
 
 void CProgressDialog::FinalMessage(const char* message)
 {
-	MessageBox(convert_s2w(message).c_str(), _T("Pekora"), MB_OK);
+	MessageBox(convert_s2w(message).c_str(), _T("Korone"), MB_OK);
 }
 
 void CProgressDialog::SetCancelEnabled(bool state)

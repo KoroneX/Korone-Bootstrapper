@@ -98,7 +98,7 @@ END
 
 IDD_MAIN DIALOGEX 0, 0, 207, 61
 STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Pekora"
+CAPTION "Korone"
 FONT 10, "Segoe UI", 400, 0, 0x0
 BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,147,37,50,14,NOT WS_VISIBLE
@@ -141,12 +141,12 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "Pekora Corporation"
-            VALUE "FileDescription", "Pekora"
+            VALUE "CompanyName", "Korone Corporation"
+            VALUE "FileDescription", "Korone"
             VALUE "FileVersion", "1, 7, 0, 0"
-            VALUE "LegalCopyright", "(C) 2025 Pekora Corporation.  All rights reserved."
-            VALUE "OriginalFilename", "Pekora.exe"
-            VALUE "ProductName", "Pekora Bootstrapper"
+            VALUE "LegalCopyright", "(C) 2025 Korone Corporation.  All rights reserved."
+            VALUE "OriginalFilename", "Korone.exe"
+            VALUE "ProductName", "Korone Bootstrapper"
             VALUE "ProductVersion", "1, 7, 0, 0"
         END
     END
@@ -184,9 +184,9 @@ STRINGTABLE
 BEGIN
     IDS_INSTALLHOST         "setup.pekora.zip"
     IDS_BASEHOST            "www.pekora.zip"
-    IDS_SUCCESS1            "Pekora IS SUCCESSFULLY INSTALLED!"
+    IDS_SUCCESS1            "Korone IS SUCCESSFULLY INSTALLED!"
     IDS_SUCCESS2            "Just click the ""Play"" button on any game to join the action!"
-    IDS_STUDIO_SUCCESS1     "Pekora STUDIO IS SUCCESSFULLY INSTALLED!"
+    IDS_STUDIO_SUCCESS1     "Korone STUDIO IS SUCCESSFULLY INSTALLED!"
     IDS_STUDIO_SUCCESS2     "Click ""Launch Studio"" to make your new game!"
 END
 

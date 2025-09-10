@@ -73,7 +73,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(CONTRIB_PATH)\SDK\Lib\Iphlpapi.lib $(CONTRIB_PATH)\SDK\Lib\taskschd.lib $(CONTRIB_PATH)\SDK\Lib\mstask.lib"
-				OutputFile="$(OutDir)\PekoraPlayerLauncher.exe"
+				OutputFile="$(OutDir)\KoronePlayerLauncher.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -155,7 +155,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(CONTRIB_PATH)\SDK\Lib\Iphlpapi.lib $(CONTRIB_PATH)\SDK\Lib\taskschd.lib $(CONTRIB_PATH)\SDK\Lib\mstask.lib"
-				OutputFile="$(OutDir)\PekoraPlayerLauncher.exe"
+				OutputFile="$(OutDir)\KoronePlayerLauncher.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -238,7 +238,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(CONTRIB_PATH)\SDK\Lib\Iphlpapi.lib $(CONTRIB_PATH)\SDK\Lib\taskschd.lib $(CONTRIB_PATH)\SDK\Lib\mstask.lib"
-				OutputFile="$(OutDir)\PekoraPlayerLauncher.exe"
+				OutputFile="$(OutDir)\KoronePlayerLauncher.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -323,7 +323,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(CONTRIB_PATH)\SDK\Lib\Iphlpapi.lib $(CONTRIB_PATH)\SDK\Lib\taskschd.lib $(CONTRIB_PATH)\SDK\Lib\mstask.lib"
-				OutputFile="$(OutDir)\PekoraPlayerLauncher.exe"
+				OutputFile="$(OutDir)\KoronePlayerLauncher.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"

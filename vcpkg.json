@@ -6,7 +6,6 @@
     "boost-asio",
     "boost-foreach",
     "boost-lexical-cast",
-    "boost-lexical-cast",
     "boost-property-tree",
     "boost-thread",
     {

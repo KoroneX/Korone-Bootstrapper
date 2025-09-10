@@ -2,7 +2,7 @@
     signature="$CHICAGO$"
     AdvancedINF=2.0 
 [Add.Code]
-    Pekora.exe=Pekora.exe
-[Pekora.exe]
+    Korone.exe=Korone.exe
+[Korone.exe]
     file-win32-x86=thiscab
     clsid={5FF8A30F-D08D-41CD-A03A-10346903902B}

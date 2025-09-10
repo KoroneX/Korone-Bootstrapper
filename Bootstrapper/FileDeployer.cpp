@@ -26,7 +26,7 @@ std::wstring FileDeployer::downloadVersionedFile(const TCHAR* name, Progress& pr
 	if (downloadsDirectory.empty())
 		throw std::runtime_error("Failed to create Downloads folder"); 
 
-	auto key = CreateKey(_perUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE, _T("Software\\PekoraReg\\ETags"));
+	auto key = CreateKey(_perUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE, _T("Software\\KoroneReg\\ETags"));
 
 	std::string etag = QueryStringValue(key, name);
 
@@ -235,7 +235,7 @@ void FileDeployer::cleanupVersionedFile(const std::wstring& name, const std::wst
 		}
 
 		//Clear out the etag registry cache, just in case our file delete did not work
-		auto key = CreateKey(_perUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE, _T("Software\\PekoraReg\\ETags"));
+		auto key = CreateKey(_perUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE, _T("Software\\KoroneReg\\ETags"));
 		key->SetStringValue(name.c_str(), _T(""));
 	}
 	catch(std::exception&)
