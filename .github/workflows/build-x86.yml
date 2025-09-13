@@ -1,0 +1,100 @@
+name: Build x86 (Win32) Release
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.3
+      
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+        vcpkgGitCommitId: '7e19f3c64cb636ee21f41bfe8558a6dfaae6236f'
+        vcpkgJsonGlob: 'vcpkg.json'
+        runVcpkgInstall: '--triplet=x86-windows-static --x-wait-for-lock'
+        
+    - name: Set vcpkg environment
+      run: |
+        echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $env:GITHUB_ENV
+        echo "VCPKG_DEFAULT_TRIPLET=x86-windows-static" >> $env:GITHUB_ENV
+        echo "CMAKE_WARN_UNUSED_CLI_VARS=OFF" >> $env:GITHUB_ENV
+        echo "VCPKG_CMAKE_CONFIGURE_OPTIONS=-DCMAKE_WARN_UNUSED_CLI_VARS=OFF" >> $env:GITHUB_ENV
+        
+    - name: Integrate vcpkg with MSBuild
+      run: |
+        & "${{ github.workspace }}/vcpkg/vcpkg.exe" integrate install
+        
+    - name: Build Solution
+      run: |
+        msbuild "Installer.sln" /p:Configuration=Release /p:Platform=Win32 /p:VcpkgEnabled=true /p:VcpkgUseStatic=true /p:VcpkgTriplet=x86-windows-static
+        
+    - name: Verify executable exists
+      run: |
+        if (Test-Path "BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe") {
+          Write-Host "KoronePlayerLauncher.exe built successfully!"
+          Get-Item "BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe" | Select-Object Name, Length, LastWriteTime
+        } else {
+          Write-Host "KoronePlayerLauncher.exe not found!"
+          Get-ChildItem -Recurse -Name "*.exe" | ForEach-Object { Write-Host "Found: $_" }
+          exit 1
+        }
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: KoronePlayerLauncher-x86-Release
+        path: |
+          BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe
+        retention-days: 30
+        
+    - name: Create release package
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      run: |
+        $version = Get-Date -Format "yyyy.MM.dd-HHmm"
+        $zipName = "KoronePlayerLauncher-x86-$version.zip"
+        
+        # create a temporary dir for packaging
+        New-Item -ItemType Directory -Path "release-package" -Force
+        
+        # copy the exe
+        Copy-Item "BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe" "release-package\"
+        
+        # create README for the release
+        $readmeText = "# KoronePlayerLauncher (x86)`n`n"
+        $readmeText += "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')`n"
+        $readmeText += "Commit: ${{ github.sha }}`n"
+        $readmeText += "Platform: Windows x86 (32-bit)`n`n"
+        $readmeText += "## Installation`n"
+        $readmeText += "1. Download KoronePlayerLauncher.exe`n"
+        $readmeText += "2. Run the executable`n`n"
+        $readmeText += "## Requirements`n"
+        $readmeText += "- Windows 7 or later`n"
+        $readmeText += "- Visual C++ Redistributable (if not already installed)"
+        $readmeText | Out-File -FilePath "release-package\README.txt" -Encoding UTF8
+        
+        # create the zip file
+        Compress-Archive -Path "release-package\*" -DestinationPath $zipName -Force
+        
+        Write-Host "Created release package: $zipName"
+        Get-Item $zipName | Select-Object Name, Length
+        
+    - name: Upload release package
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-artifact@v4
+      with:
+        name: Release-Package-x86
+        path: "KoronePlayerLauncher-x86-*.zip"
+        retention-days: 90
