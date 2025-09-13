@@ -1,21 +1,54 @@
 {
   "name": "bootstrapper",
   "version": "1.0.0",
-  "builtin-baseline": "4bb07a326d9b9bce3703272a509e5bc25dd9cfd5",
+  "builtin-baseline": "7e19f3c64cb636ee21f41bfe8558a6dfaae6236f",
   "dependencies": [
+<<<<<<< Updated upstream
     "boost-asio",
     "boost-foreach",
     "boost-lexical-cast",
     "boost-property-tree",
     "boost-thread",
+=======
+    {
+      "name": "boost-asio",
+      "version>=": "1.81.0"
+    },
+    {
+      "name": "boost-foreach",
+      "version>=": "1.81.0"
+    },
+    {
+      "name": "boost-lexical-cast",
+      "version>=": "1.81.0"
+    },
+    {
+      "name": "boost-property-tree",
+      "version>=": "1.81.0"
+    },
+    {
+      "name": "boost-thread",
+      "version>=": "1.81.0"
+    },
+>>>>>>> Stashed changes
     {
       "name": "cpr",
+      "version>=": "1.9.3",
       "features": [
         "ssl"
       ]
     },
-    "rapidjson",
-    "zlib",
-    "minizip"
+    {
+      "name": "rapidjson",
+      "version>=": "2022-06-28#3"
+    },
+    {
+      "name": "zlib",
+      "version>=": "1.2.13"
+    },
+    {
+      "name": "minizip",
+      "version>=": "1.2.13"
+    }
   ]
 }

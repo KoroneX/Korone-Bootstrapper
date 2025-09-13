@@ -54,6 +54,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -82,10 +83,11 @@
     <TargetName>KoronePlayerLauncher</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>bin\$(Configuration)\$(PlatformName)\</OutDir>
+    <IntDir>obj\$(Configuration)\$(PlatformName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>KoronePlayerLauncher</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>bin\$(Configuration)\$(PlatformName)\</OutDir>
@@ -108,6 +110,12 @@
     <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -149,21 +157,33 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\Bootstrapper;$(CONTRIB_PATH)\boost_1_84_0\boost\include;$(CONTRIB_PATH)\boost_1_84_0\src;..\Win;..\ClientShared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Bootstrapper;..\Win;..\ClientShared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;BOOST_THREAD_BUILD_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
+<<<<<<< Updated upstream
       <AdditionalDependencies>$(CONTRIB_PATH)\SDK\Lib\Iphlpapi.lib;$(CONTRIB_PATH)\SDK\Lib\taskschd.lib;$(CONTRIB_PATH)\SDK\Lib\mstask.lib;%(AdditionalDependencies)</AdditionalDependencies>
+<<<<<<< Updated upstream
       <OutputFile>$(OutDir)KoronePlayerLauncher.exe</OutputFile>
+=======
+      <OutputFile>$(OutDir)PekoraPlayerLauncher.exe</OutputFile>
+=======
+      <AdditionalDependencies>Iphlpapi.lib;taskschd.lib;mstask.lib;crypt32.lib;secur32.lib;bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)KoronePlayerLauncher.exe</OutputFile>
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(CONTRIB_PATH)\boost_1_84_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command />
