@@ -43,11 +43,11 @@ jobs:
         
     - name: Verify executable exists
       run: |
-        if (Test-Path "BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe") {
-          Write-Host "KoronePlayerLauncher.exe built successfully!"
-          Get-Item "BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe" | Select-Object Name, Length, LastWriteTime
+        if (Test-Path "BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe") {
+          Write-Host "PekoraPlayerLauncher.exe built successfully!"
+          Get-Item "BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe" | Select-Object Name, Length, LastWriteTime
         } else {
-          Write-Host "KoronePlayerLauncher.exe not found!"
+          Write-Host "PekoraPlayerLauncher.exe not found!"
           Get-ChildItem -Recurse -Name "*.exe" | ForEach-Object { Write-Host "Found: $_" }
           exit 1
         }
@@ -55,30 +55,30 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: KoronePlayerLauncher-x86-Release
+        name: PekoraPlayerLauncher-x86-Release
         path: |
-          BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe
+          BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe
         retention-days: 30
         
     - name: Create release package
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
       run: |
         $version = Get-Date -Format "yyyy.MM.dd-HHmm"
-        $zipName = "KoronePlayerLauncher-x86-$version.zip"
+        $zipName = "PekoraPlayerLauncher-x86-$version.zip"
         
         # create a temporary dir for packaging
         New-Item -ItemType Directory -Path "release-package" -Force
         
         # copy the exe
-        Copy-Item "BootstrapperClient\bin\Release\Win32\KoronePlayerLauncher.exe" "release-package\"
+        Copy-Item "BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe" "release-package\"
         
         # create README for the release
-        $readmeText = "# KoronePlayerLauncher (x86)`n`n"
+        $readmeText = "# PekoraPlayerLauncher (x86)`n`n"
         $readmeText += "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')`n"
         $readmeText += "Commit: ${{ github.sha }}`n"
         $readmeText += "Platform: Windows x86 (32-bit)`n`n"
         $readmeText += "## Installation`n"
-        $readmeText += "1. Download KoronePlayerLauncher.exe`n"
+        $readmeText += "1. Download PekoraPlayerLauncher.exe`n"
         $readmeText += "2. Run the executable`n`n"
         $readmeText += "## Requirements`n"
         $readmeText += "- Windows 7 or later`n"
@@ -96,5 +96,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Release-Package-x86
-        path: "KoronePlayerLauncher-x86-*.zip"
+        path: "PekoraPlayerLauncher-x86-*.zip"
         retention-days: 90
