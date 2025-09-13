@@ -291,7 +291,7 @@ std::wstring getQTStudioCode()
 void appendEnvironmentToProtocolScheme(std::wstring& scheme, const std::string baseUrl)
 {
 	std::vector<std::string> baseHostUrlParts = splitOn(baseUrl, '.');
-	if (baseHostUrlParts[1] != "korone")
+	if (baseHostUrlParts[1] != "pekora")
 	{
 		scheme += convert_s2w("-" + baseHostUrlParts[1]);
 	}
@@ -299,7 +299,7 @@ void appendEnvironmentToProtocolScheme(std::wstring& scheme, const std::string b
 
 std::wstring getPlayerProtocolScheme(const std::string& baseUrl)
 {
-	std::wstring scheme = _T("korone-player");
+	std::wstring scheme = _T("pekora-player");
 
 	appendEnvironmentToProtocolScheme(scheme, baseUrl);
 
