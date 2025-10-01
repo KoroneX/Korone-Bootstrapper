@@ -5,12 +5,10 @@
 #include "stdafx.h"
 #include "Unzipper.h"
 
-#include <zlib.h>
-#include <minizip/unzip.h>
-
+#include "zlib\unzip.h"
+#include "zlib\iowin32.h"
 #include <string>
 #include "format_string.h"
-
 
 #ifdef _DEBUG
 #undef THIS_FILE

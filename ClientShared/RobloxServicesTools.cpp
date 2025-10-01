@@ -9,7 +9,7 @@
 #ifdef RBX_PLATFORM_DURANGO
 #define DEFAULT_URL_SCHEMA "https"
 #else
-#define DEFAULT_URL_SCHEMA "https"
+#define DEFAULT_URL_SCHEMA "http"
 #endif
 
 std::string trim_trailing_slashes(const std::string &path) 
@@ -35,7 +35,7 @@ static std::string BuildGenericApiUrl(const std::string &baseUrl, const std::str
 	{
 		subUrl = "";
 	}
-	std::string httpPrefix = "https://";
+	std::string httpPrefix = "http://";
 	pos = subUrl.find(httpPrefix);
 	if (pos != -1)
 	{

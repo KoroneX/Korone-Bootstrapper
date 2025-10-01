@@ -21,7 +21,7 @@ public:
 		DECLARE_DATA_BOOL(UseNewCdn);
 		DECLARE_DATA_BOOL(UseNewVersionFetch);
 		DECLARE_DATA_BOOL(CheckIsStudioOutofDate);
-		DECLARE_DATA_INT(httpCprPostTimeout);
+		DECLARE_DATA_INT(HttpBoostPostTimeout);
 		DECLARE_DATA_BOOL(ShowInstallSuccessPrompt);
 		DECLARE_DATA_BOOL(LogChromeProtocolFix);
 		DECLARE_DATA_STRING(InfluxUrl);

@@ -2,18 +2,16 @@
 #include "HttpTools.h"
 #include "SharedHelpers.h"
 #include "atlutil.h"
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
 #include "wininet.h"
 #include <strstream>
 #pragma comment (lib, "Wininet.lib")
 
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/lexical_cast.hpp>
-#include <cpr/cpr.h>
-#include <iostream>
 
 static const std::string sContentLength = "content-length: ";
 static const std::string sEtag = "etag: ";
@@ -41,6 +39,7 @@ namespace HttpTools
 	};
 
 	int httpWinInet(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress);
+	int httpBoost(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress);
 	int http(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log = true);
 
 	static void dummyProgress(int, int) {}
@@ -231,8 +230,72 @@ namespace HttpTools
 
 	std::string httpGetString(const std::string& url)
 	{
-		cpr::Response response = cpr::Get(cpr::Url{ url });
-		return response.text;
+		CUrl u;
+		u.CrackUrl(convert_s2w(url).c_str());
+
+		const bool isSecure = u.GetScheme() == ATL_URL_SCHEME_HTTPS;
+
+		// Initialize the User Agent
+		WININETHINTERNET session = InternetOpen(L"Roblox/WinInet", PRE_CONFIG_INTERNET_ACCESS, NULL, NULL, 0);
+		if (!session) 
+		{
+			throw std::runtime_error("httpGetString - InternetOpen ERROR");
+		}
+
+		WININETHINTERNET connection = ::InternetConnect(session, u.GetHostName(), u.GetPortNumber(), u.GetUserName(), u.GetPassword(), INTERNET_SERVICE_HTTP, 0, 0); 
+		if (!connection) 
+		{
+			throw std::runtime_error("httpGetString - InternetConnect ERROR");
+		}
+
+		CString s = u.GetUrlPath();
+		s += u.GetExtraInfo();
+		WININETHINTERNET request = ::HttpOpenRequest(connection, _T("GET"), s, HTTP_VERSION, _T(""), NULL, isSecure ? INTERNET_FLAG_SECURE : 0, 0); 
+		if (!request) 
+		{
+			throw std::runtime_error("httpGetString - HttpOpenRequest ERROR");
+		}
+
+		DWORD httpSendResult = ::HttpSendRequest(request, NULL, 0, 0, 0);
+		if (!httpSendResult) 
+		{
+			throw std::runtime_error("httpGetString - HttpSendRequest ERROR");
+		}
+
+		std::ostringstream data;
+		while (true)
+		{
+			DWORD numBytes;
+			if (!::InternetQueryDataAvailable(request, &numBytes, 0, 0))
+			{
+				DWORD err = GetLastError();
+				if(err == ERROR_IO_PENDING)
+				{
+					Sleep(100); // we block on data.
+					continue;
+				}
+				else
+				{
+					throw std::runtime_error("httpGetString - InternetQueryDataAvailable ERROR");
+				}
+			}
+
+			if (numBytes==0)
+				break; // EOF
+
+			if (numBytes == -1)
+			{
+				throw std::runtime_error("httpGetString - No Settings ERROR");
+			}
+
+			char* buffer = (char*)malloc(numBytes + 1);
+			DWORD bytesRead;
+			throwLastError(::InternetReadFile(request, (LPVOID) buffer, numBytes, &bytesRead), "InternetReadFile failed");
+			data.write(buffer, bytesRead);
+			free(buffer);
+		}
+
+		return data.str();
 	}
 
 	int httpWinInet(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress)
@@ -378,100 +441,192 @@ namespace HttpTools
 		return statusCode;
 	}
 
-	int httpCpr(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log)
+	int httpBoost(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log)
 	{
-		std::string url = "https://" + host + path;
-
-		std::string body((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
-		size_t uploadSize = body.size();
-		cpr::Header headers;
-		/* Meow almost forgot the user agent */
-		headers["User-Agent"] = "Roblox/WinInet";
-
-		if (contentType)
-			headers["Content-Type"] = contentType;
-
-		if (!etag.empty())
-			headers["If-None-Match"] = "\"" + etag + "\"";
-
-		headers["Accept"] = "*/*";
-		cpr::Response response;
-		try {
-			if (!strcmp(method, "GET")) {
-				response = cpr::Get(
-					cpr::Url{ url },
-					headers,
-					cpr::Timeout{ 30000 }
-				);
+		if (log)
+		{
+			if (!etag.empty())
+			{
+				LLOG_ENTRY4(site->Logger(), "%s http://%s%s If-None-Match: \"%s\"", method, host.c_str(), path.c_str(), etag.c_str());
 			}
-			else if (!strcmp(method, "POST")) {
-				response = cpr::Post(
-					cpr::Url{ url },
-					headers,
-					cpr::Body{ body },
-					cpr::Timeout{ 30000 }
-				);
-			}
-			else {
-				throw std::runtime_error("Unsupported HTTP method");
+			else
+			{
+				LLOG_ENTRY3(site->Logger(), "%s http://%s%s", method, host.c_str(), path.c_str());
 			}
 		}
-		catch (const std::exception& ex)
+
+		CUrl u;
+		BOOL urlCracked;
+#ifdef UNICODE
+		urlCracked = u.CrackUrl(convert_s2w(host).c_str());
+#else
+		urlCracked = u.CrackUrl(host.c_str());
+#endif
+
+		boost::asio::io_context io_context;
+
+		tcp::socket socket(io_context);
+
+		// Get a list of endpoints corresponding to the server name.
+		tcp::resolver resolver(io_context);
+
+		std::string port = urlCracked ? boost::lexical_cast<std::string>(u.GetPortNumber()) : "http";
+		std::string hostName = urlCracked ? convert_w2s(u.GetHostName()) : host;
+		tcp::resolver::results_type endpoints = resolver.resolve(hostName, port);
+
+		auto endpoint_iterator = endpoints.begin();
+		auto end = endpoints.end();
+
+		if (httpBoostPostTimeout > 0 && !std::strcmp(method, "POST"))
 		{
-			MessageBoxA(nullptr, "Failed here", "failed here", MB_ICONERROR);
+			DWORD timeout = httpBoostPostTimeout * 1000;
+			//setsockopt(socket.native(), SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+			//setsockopt(socket.native(), SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
+		}
+
+		// Try each endpoint until we successfully establish a connection.
+		boost::system::error_code error = boost::asio::error::host_not_found;
+		while (error && endpoint_iterator != end)
+		{
+		  socket.close();
+		  socket.connect(*endpoint_iterator++, error);
+		}
+
+		if (error)
+		{
 			if (log)
 			{
+				LLOG_ENTRY1(site->Logger(), "Failed to find an endpoint: %s", error.message().c_str());
 				LLOG_ENTRY3(site->Logger(), "Trying WinInet for %s http://%s%s", method, host.c_str(), path.c_str());
 			}
 			return httpWinInet(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress);
 		}
 
-		switch (response.status_code)
+		size_t inputSize;
 		{
-		case cpr::status::HTTP_OK:
-		case cpr::status::HTTP_ACCEPTED:
-		case cpr::status::HTTP_NOT_MODIFIED:
+			size_t x = input.tellg();
+			input.seekg (0, std::ios::end);
+			size_t y = input.tellg();
+			inputSize = y - x;
+			input.seekg (0, std::ios::beg);
+		}
+
+		// Form the request. We specify the "Connection: close" header so that the
+		// server will close the socket after transmitting the response. This will
+		// allow us to treat all data up until the EOF as the content.
+		boost::asio::streambuf request;
+		std::ostream request_stream(&request);
+		request_stream << method << " " << path << " HTTP/1.0\r\n";
+		request_stream << "Host: " << host << "\r\n";
+		request_stream << "Accept: */*\r\n";
+		if (inputSize || !std::strcmp(method, "POST"))
+			request_stream << "Content-Length: " << inputSize << "\r\n";
+		if (contentType)
+			request_stream << "Content-Type: " << contentType << "\r\n";
+		request_stream << "Connection: close\r\n";
+		if (!etag.empty())
+			request_stream << "If-None-Match: \"" << etag << "\"\r\n";
+		// TODO: Accept gzip encoding!
+		request_stream << "\r\n";
+		if (inputSize)
+			std::copy(
+				std::istreambuf_iterator<char>(input),
+				std::istreambuf_iterator<char>(),
+				std::ostreambuf_iterator<char>(request_stream)
+			);	
+
+		// Send the request.
+		boost::asio::write(socket, request);
+
+		// Read the response status line.
+		boost::asio::streambuf response;
+		boost::asio::read_until(socket, response, "\r\n");
+
+		// Check that response is OK.
+		std::istream response_stream(&response);
+		std::string http_version;
+		response_stream >> http_version;
+		unsigned int status_code;
+		response_stream >> status_code;
+		std::string status_message;
+		std::getline(response_stream, status_message);
+		if (!response_stream || http_version.substr(0, 5) != "HTTP/")
+			throw std::runtime_error("Invalid response");
+
+		if (log)
+			LLOG_ENTRY4(site->Logger(), "%s http://%s%s status_code:%d", method, host.c_str(), path.c_str(), status_code);
+
+		switch (status_code)
+		{
+		case 200:
+		case 304:
 			break;
 		default:
-		{
-			if (log)
 			{
-				LLOG_ENTRY3(site->Logger(), "Trying WinInet for %s http://%s%s", method, host.c_str(), path.c_str());
+				if (log)
+				{
+					LLOG_ENTRY2(site->Logger(), "Response returned with bad status code %d: %s", status_code, status_message.c_str());
+					LLOG_ENTRY3(site->Logger(), "Trying WinInet for %s http://%s%s", method, host.c_str(), path.c_str());
+				}
+				return httpWinInet(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress);
 			}
-			return httpWinInet(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress);
-		}
 		}
 
-		auto it = response.header.find("etag");
-		if (it != response.header.end())
+		// Read the response headers, which are terminated by a blank line.
+		boost::asio::read_until(socket, response, "\r\n\r\n");
+
+		// Process the response headers.
+		size_t contentLength = 0;
+		etag.clear();
+		std::string header;
+		while (std::getline(response_stream, header) && header != "\r")
 		{
-			etag = it->second;
-			if (!etag.empty() && etag.front() == '"')
-				etag = etag.substr(1, etag.size() - 2);
+			// convert header to lower case
+			std::transform(header.begin(), header.end(), header.begin(), tolower);
+
+			if (header.find(sContentLength)==0)
+				contentLength = atoi(header.substr(sContentLength.size()).c_str());
+			else if (header.find(sEtag)==0)
+				// Strip the double-quotes
+				etag = header.substr(sEtag.size()+1, header.size()-sEtag.size()-3);
+			if (!ignoreCancel)
+				site->CheckCancel();
 		}
 
-		if (response.status_code != cpr::status::HTTP_NOT_MODIFIED)
+		if (status_code!=304)
 		{
-			result.write(response.text.c_str(), response.text.size());
-			progress(static_cast<int>(result.tellp()), static_cast<int>(response.text.size()));
+			// Write whatever content we already have to output.
+			if (response.size() > 0)
+			  result << &response;
+
+			progress(result.tellp(), contentLength);
+
+			// Read until EOF, writing data to output as we go.
+			while (boost::asio::read(socket, response, boost::asio::transfer_at_least(1), error))
+			{
+				result << &response;
+				progress(result.tellp(), contentLength);
+				if (!ignoreCancel)
+					site->CheckCancel();
+			}
+			if (error != boost::asio::error::eof)
+			  throw boost::system::system_error(error, "Failed to read response");
 		}
 		else
-		{
 			progress(1, 1);
-		}
 
-		return static_cast<int>(response.status_code);
+		return status_code;
 	}
 
 	int http(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log)
 	{
 		try
 		{
-			return httpCpr(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress, log);
+			return httpBoost(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress, log);
 		}
 		catch (std::exception&)
 		{
-			LLOG_ENTRY(site->Logger(), "httpCpr failed, falling back to winInet");
+			LLOG_ENTRY(site->Logger(), "httpBoost failed, falling back to winInet");
 			return httpWinInet(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress);
 		}
 	}
