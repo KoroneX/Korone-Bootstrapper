@@ -173,19 +173,6 @@ jobs:
           **Commit:** ${{ github.sha }}
           **Platforms:** Windows x86 (32-bit) and x64 (64-bit)
 
-          ## Downloads
-          - **x86 Version:** PekoraPlayerLauncher-x86.zip (32-bit)
-          - **x64 Version:** PekoraPlayerLauncher-x64.zip (64-bit)
-
-          ## Installation
-          1. Download the appropriate version for your system (x86 for 32-bit Windows, x64 for 64-bit Windows)
-          2. Extract the zip file
-          3. Run PekoraPlayerLauncher.exe
-
-          ## Requirements
-          - Windows 7 or later
-          - Visual C++ Redistributable (if not already installed)
-
     - name: Upload Release Asset (x86)
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
       uses: actions/upload-release-asset@v1
