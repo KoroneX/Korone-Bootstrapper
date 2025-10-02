@@ -2327,7 +2327,17 @@ bool Bootstrapper::deleteDirectory(const std::wstring &refcstrRootDirectory, boo
 						// Delete file
 						if(::DeleteFile(strFilePath.c_str()) == FALSE)
 						{
-							failure = true;
+							DWORD error = GetLastError();
+							if (error == ERROR_SHARING_VIOLATION || error == ERROR_LOCK_VIOLATION)
+							{
+								LOG_ENTRY1("File is locked, skipping deletion: %S", strFilePath.c_str());
+								/* dont set failure for locked files they might be system files or running executables
+								note: the directory removal will fail later if necessary files cant be deleted */
+							}
+							else
+							{
+								failure = true;
+							}
 						}
 					}
 				}
@@ -2349,10 +2359,23 @@ bool Bootstrapper::deleteDirectory(const std::wstring &refcstrRootDirectory, boo
 			{
 				failure = true;
 			}
-			// Delete directory
-			else if(::RemoveDirectory(refcstrRootDirectory.c_str()) == FALSE)
+			else
 			{
-				failure = true;
+				if(::RemoveDirectory(refcstrRootDirectory.c_str()) == FALSE)
+				{
+					/* if dir removal fails im assuming its because some files couldnt be deleted so
+					try again after a short delay in case files were locked */
+					::Sleep(100);
+					if(::RemoveDirectory(refcstrRootDirectory.c_str()) == FALSE)
+					{
+						LOG_ENTRY1("Failed to remove directory after retry: %S", refcstrRootDirectory.c_str());
+						failure = true;
+					}
+					else
+					{
+						LOG_ENTRY1("Successfully removed directory after retry: %S", refcstrRootDirectory.c_str());
+					}
+				}
 			}
 		}
 	}
@@ -2427,6 +2450,8 @@ void Bootstrapper::uninstall(bool isPerUser)
 		LOG_ENTRY("WARNING: failed to delete ProductCodeKey");
 	}
 
+	/* the registry has been cleaned up so we need to delete by version number */
+	LOG_ENTRY1("Bootstrapper::uninstall - deleting version folder: %s", version.c_str());
 	deleteVersionFolder(version);
     deleteLegacyShortcuts();
 
@@ -2509,7 +2534,10 @@ void Bootstrapper::deleteVersionFolder(std::string version)
 		return;
 	}
 
-	if (version == queryInstalledVersion())
+	/* the registry keys have already been deleted so queryInstalledVersion() should return empty
+	but if it doesnt we still want to proceed with deletion */
+	std::string installedVersion = queryInstalledVersion();
+	if (!installedVersion.empty() && version == installedVersion)
 	{
 		LOG_ENTRY("Bootstrapper::deleteVersionFolder - WARNING trying to delete current version");
 		return;
@@ -2524,7 +2552,9 @@ void Bootstrapper::deleteVersionFolder(std::string version)
 	std::wstring curDir = dir + convert_s2w(version) + _T('\\');
 	try
 	{
+		LOG_ENTRY1("Bootstrapper::deleteVersionFolder - deleting directory: %S", curDir.c_str());
 		deleteDirectory(curDir, false);
+		LOG_ENTRY1("Bootstrapper::deleteVersionFolder - successfully deleted: %S", curDir.c_str());
 	}
 	catch (cancel_exception&)
 	{
@@ -2537,6 +2567,7 @@ void Bootstrapper::deleteVersionFolder(std::string version)
 	catch (...)
 	{
 		// ignore this error
+		LOG_ENTRY1("Bootstrapper::deleteVersionFolder - failed to delete directory: %S", curDir.c_str());
 	}
 }
 
