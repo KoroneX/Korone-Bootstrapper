@@ -127,8 +127,8 @@ void CClientProgressDialog::InitDialog()
 		width/2-bntWidth/2, height - 55, bntWidth, bntHeight, hWndDialog, (HMENU)IDB_BTN_OK, GetModuleHandle(NULL), NULL);
 	SendMessage(hWndBntOk, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)getOkBitmap(false));
 
-	ClientOldButtonProc = (WNDPROC)SetWindowLongPtr(hWndBntOk, GWLP_WNDPROC, (LONG) ClientButtonProc);
-	SetWindowLongPtr(hWndBntOk, GWLP_USERDATA, (LONG)this);
+	ClientOldButtonProc = (WNDPROC)SetWindowLongPtr(hWndBntOk, GWLP_WNDPROC, (LONG_PTR) ClientButtonProc);
+	SetWindowLongPtr(hWndBntOk, GWLP_USERDATA, (LONG_PTR)this);
 }
 
 void CClientProgressDialog::ShowSuccessPrompt()

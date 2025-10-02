@@ -1661,7 +1661,7 @@ void Bootstrapper::checkOSPrerequisit()
 
 	LOG_ENTRY("checkOSPrerequisit failed");
 	if (windowed)
-		dialog->DisplayError("Pekora requires Microsoft Windows XP SP1 or greater", NULL);
+		dialog->DisplayError("Korone requires Microsoft Windows XP SP1 or greater", NULL);
 	throw installer_error_exception(installer_error_exception::OsPrerequisite);
 }
 
@@ -1671,7 +1671,7 @@ void Bootstrapper::checkCPUPrerequisit()
 	{
 		LOG_ENTRY("checkCPUPrerequisit failed");
 	    if (windowed)
-		    dialog->DisplayError("Pekora requires SSE2 support", NULL);
+		    dialog->DisplayError("Korone requires SSE2 support", NULL);
 		throw installer_error_exception(installer_error_exception::CpuPrerequisite);
 	}
 }
@@ -1696,7 +1696,7 @@ void Bootstrapper::checkIEPrerequisit()
 	{
 		LOG_ENTRY("checkIEPrerequisit failed");
 		if (windowed)
-			dialog->DisplayError("Pekora requires Microsoft Internet Explorer 6.0 or greater", NULL);
+			dialog->DisplayError("Korone requires Microsoft Internet Explorer 6.0 or greater", NULL);
 		throw installer_error_exception(installer_error_exception::IePrerequisite);
 	}
 }
@@ -1931,10 +1931,10 @@ void Bootstrapper::run()
 			LOG_ENTRY("Error: IsNetworkAlive failed");
 			if (windowed && isLatestProcess())
 			{
-				CString message = _T("Pekora cannot connect to the Internet\n\nDoes your computer have a working network connection?  Is antivirus software preventing Roblox from accessing the Internet?");
+				CString message = _T("Korone cannot connect to the Internet\n\nDoes your computer have a working network connection?  Is antivirus software preventing Roblox from accessing the Internet?");
 				if (!robloxAppArgs.empty())
 				{
-					message += _T("\n\nIf you Pekora may not work properly.");
+					message += _T("\n\nIf you Korone may not work properly.");
 					// TODO: CTaskDialog should use nice command buttons
 					if (dialog->MessageBox(message, _T("Error"), MB_OKCANCEL | MB_ICONEXCLAMATION) == IDOK)
 					{
@@ -1986,7 +1986,7 @@ void Bootstrapper::run()
 			if (queryInstalledVersion() != installVersion)
 				throw non_zero_exit_exception();
 
-			LOG_ENTRY("Pekora is up to date, returning success");
+			LOG_ENTRY("Korone is up to date, returning success");
 			goto done;
 		}
 
@@ -2234,7 +2234,7 @@ void Bootstrapper::run()
 	catch (non_zero_exit_exception&)
 	{
 		exitCode = 1;
-		LOG_ENTRY("Pekora is not up to date, returning failure");
+		LOG_ENTRY("Korone is not up to date, returning failure");
 	}
 	catch (silent_exception&)
 	{
