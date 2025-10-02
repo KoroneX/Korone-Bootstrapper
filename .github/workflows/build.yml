@@ -1,0 +1,209 @@
+name: Bootstrapper x86/x64 Release
+
+permissions:
+  contents: write
+  packages: write
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.3
+      
+    - name: Setup vcpkg (x86)
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgDirectory: '${{ github.workspace }}/vcpkg-x86'
+        vcpkgGitCommitId: '7e19f3c64cb636ee21f41bfe8558a6dfaae6236f'
+        vcpkgJsonGlob: 'vcpkg.json'
+        runVcpkgInstall: '--triplet=x86-windows-static --x-wait-for-lock'
+
+    - name: Setup vcpkg (x64)
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgDirectory: '${{ github.workspace }}/vcpkg-x64'
+        vcpkgGitCommitId: '7e19f3c64cb636ee21f41bfe8558a6dfaae6236f'
+        vcpkgJsonGlob: 'vcpkg.json'
+        runVcpkgInstall: '--triplet=x64-windows-static --x-wait-for-lock'
+        
+    - name: Set vcpkg Environment (x86)
+      run: |
+        echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg-x86" >> $env:GITHUB_ENV
+        echo "VCPKG_DEFAULT_TRIPLET=x86-windows-static" >> $env:GITHUB_ENV
+        echo "CMAKE_WARN_UNUSED_CLI_VARS=OFF" >> $env:GITHUB_ENV
+        echo "VCPKG_CMAKE_CONFIGURE_OPTIONS=-DCMAKE_WARN_UNUSED_CLI_VARS=OFF" >> $env:GITHUB_ENV
+
+    - name: Set vcpkg Environment (x64)
+      run: |
+        echo "VCPKG_ROOT_X64=${{ github.workspace }}/vcpkg-x64" >> $env:GITHUB_ENV
+        echo "VCPKG_DEFAULT_TRIPLET_X64=x64-windows-static" >> $env:GITHUB_ENV
+
+    - name: Integrate vcpkg with MSBuild (x86)
+      run: |
+        & "${{ github.workspace }}/vcpkg-x86/vcpkg.exe" integrate install
+
+    - name: Integrate vcpkg with MSBuild (x64)
+      run: |
+        & "${{ github.workspace }}/vcpkg-x64/vcpkg.exe" integrate install
+        
+    - name: Build Solution (x86)
+      run: |
+        msbuild "Installer.sln" /p:Configuration=Release /p:Platform=Win32 /p:VcpkgEnabled=true /p:VcpkgUseStatic=true /p:VcpkgTriplet=x86-windows-static /p:VcpkgRoot="${{ github.workspace }}/vcpkg-x86"
+
+    - name: Build Solution (x64)
+      run: |
+        msbuild "Installer.sln" /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgUseStatic=true /p:VcpkgTriplet=x64-windows-static /p:VcpkgRoot="${{ github.workspace }}/vcpkg-x64"
+        
+    - name: Verify Executables Exist
+      run: |
+        $x86Exists = Test-Path "BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe"
+        $x64Exists = Test-Path "BootstrapperClient\bin\Release\x64\PekoraPlayerLauncher.exe"
+
+        if ($x86Exists) {
+          Write-Host "PekoraPlayerLauncher.exe (x86) built successfully!"
+          Get-Item "BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe" | Select-Object Name, Length, LastWriteTime
+        } else {
+          Write-Host "PekoraPlayerLauncher.exe (x86) not found!"
+        }
+
+        if ($x64Exists) {
+          Write-Host "PekoraPlayerLauncher.exe (x64) built successfully!"
+          Get-Item "BootstrapperClient\bin\Release\x64\PekoraPlayerLauncher.exe" | Select-Object Name, Length, LastWriteTime
+        } else {
+          Write-Host "PekoraPlayerLauncher.exe (x64) not found!"
+        }
+
+        if (-not $x86Exists -and -not $x64Exists) {
+          Write-Host "No executables found!"
+          Get-ChildItem -Recurse -Name "*.exe" | ForEach-Object { Write-Host "Found: $_" }
+          exit 1
+        }
+        
+    - name: Upload Build Artifacts (x86)
+      uses: actions/upload-artifact@v4
+      with:
+        name: PekoraPlayerLauncher-x86-Release
+        path: |
+          BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe
+        retention-days: 30
+
+    - name: Upload Build Artifacts (x64)
+      uses: actions/upload-artifact@v4
+      with:
+        name: PekoraPlayerLauncher-x64-Release
+        path: |
+          BootstrapperClient\bin\Release\x64\PekoraPlayerLauncher.exe
+        retention-days: 30
+        
+    - name: Create Release Package (x86)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      run: |
+        $zipName = "PekoraPlayerLauncher-x86.zip"
+
+        # Create a temporary directory for packaging
+        New-Item -ItemType Directory -Path "release-package-x86" -Force
+
+        # Copy the executable
+        Copy-Item "BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe" "release-package-x86\"
+
+        # Create the zip file
+        Compress-Archive -Path "release-package-x86\*" -DestinationPath $zipName -Force
+
+        Write-Host "Created Release Package: $zipName"
+        Get-Item $zipName | Select-Object Name, Length
+
+    - name: Create Release Package (x64)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      run: |
+        $zipName = "PekoraPlayerLauncher-x64.zip"
+
+        # Create a temporary directory for packaging
+        New-Item -ItemType Directory -Path "release-package-x64" -Force
+
+        # Copy the executable
+        Copy-Item "BootstrapperClient\bin\Release\x64\PekoraPlayerLauncher.exe" "release-package-x64\"
+
+        # Create the release package
+        Compress-Archive -Path "release-package-x64\*" -DestinationPath $zipName -Force
+
+        Write-Host "Created Release Package: $zipName"
+        Get-Item $zipName | Select-Object Name, Length
+
+    - name: Upload Release Package (x86)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-artifact@v4
+      with:
+        name: Release-Package-x86
+        path: "PekoraPlayerLauncher-x86.zip"
+        retention-days: 90
+
+    - name: Upload Release Package (x64)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-artifact@v4
+      with:
+        name: Release-Package-x64
+        path: "PekoraPlayerLauncher-x64.zip"
+        retention-days: 90
+
+    - name: Create GitHub Release
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.7.0.2
+        release_name: "Release 1.7.0.2"
+        body: |
+          ## Release 1.7.0.2
+
+          **Build Date:** ${{ github.event.head_commit.timestamp }}
+          **Commit:** ${{ github.sha }}
+          **Platforms:** Windows x86 (32-bit) and x64 (64-bit)
+
+          ## Downloads
+          - **x86 Version:** PekoraPlayerLauncher-x86.zip (32-bit)
+          - **x64 Version:** PekoraPlayerLauncher-x64.zip (64-bit)
+
+          ## Installation
+          1. Download the appropriate version for your system (x86 for 32-bit Windows, x64 for 64-bit Windows)
+          2. Extract the zip file
+          3. Run PekoraPlayerLauncher.exe
+
+          ## Requirements
+          - Windows 7 or later
+          - Visual C++ Redistributable (if not already installed)
+
+    - name: Upload Release Asset (x86)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: PekoraPlayerLauncher-x86.zip
+        asset_name: PekoraPlayerLauncher-x86.zip
+        asset_content_type: application/zip
+
+    - name: Upload Release Asset (x64)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: PekoraPlayerLauncher-x64.zip
+        asset_name: PekoraPlayerLauncher-x64.zip
+        asset_content_type: application/zip
