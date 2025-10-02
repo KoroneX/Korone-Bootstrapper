@@ -991,7 +991,7 @@ void Bootstrapper::message(const std::string& message)
 		dialog->SetMessage(message.c_str());
 }
 
-// http://blogs.msdn.com/ie/archive/2007/06/13/new-api-smoothes-extension-development-in-protected-mode.aspx
+// https://blogs.msdn.com/ie/archive/2007/06/13/new-api-smoothes-extension-development-in-protected-mode.aspx
 UINT __stdcall RefreshPolicies()
 {
     //UINT hr = ERROR_SUCCESS;
@@ -1053,7 +1053,7 @@ bool Bootstrapper::isInstalled(std::wstring productKey)
 
 void Bootstrapper::RegisterUninstall(const TCHAR *productName)
 {
-	// http://msdn.microsoft.com/en-us/library/aa372105(VS.85).aspx
+	// https://msdn.microsoft.com/en-us/library/aa372105(VS.85).aspx
 
 	// Register Add/Remove Programs registry
 	auto keyProductCode = CreateKey(perUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE, GetProductCodeKey().c_str(), NULL);
@@ -1061,7 +1061,7 @@ void Bootstrapper::RegisterUninstall(const TCHAR *productName)
 	std::wstring uninstallString = format_string(_T("\"%s%s\" -uninstall%s"), programDirectory().c_str(), GetBootstrapperFileName().c_str(), perUser ? _T("") : _T(" -alluser"));
 	throwHRESULT (keyProductCode->SetStringValue(_T("UninstallString"), uninstallString.c_str(), REG_EXPAND_SZ), "Failed to set UninstallString key");
 	throwHRESULT (keyProductCode->SetStringValue(_T("Publisher"), _T("Pekora Corporation")), "Failed to set Publisher key");
-	throwHRESULT (keyProductCode->SetStringValue(_T("URLInfoAbout"), _T("http://pekora.zip")), "Failed to set URLInfoAbout key");
+	throwHRESULT (keyProductCode->SetStringValue(_T("URLInfoAbout"), _T("https://pekora.zip")), "Failed to set URLInfoAbout key");
 	throwHRESULT (keyProductCode->SetStringValue(_T("Comments"), convert_s2w(installVersion).c_str()), "Failed to set Comments key");
 	throwHRESULT (keyProductCode->SetStringValue(_T("InstallLocation"), programDirectory().c_str()), "Failed to set InstallLocation key");
 	throwHRESULT (keyProductCode->SetDWORDValue(_T("NoModify"), 1), "Failed to set NoModify key");
@@ -1319,7 +1319,7 @@ std::wstring Bootstrapper::programDirectory(bool isPerUser) const
 #if 1
 	return dir;
 #else
-	// http://support.microsoft.com/kb/185126
+	// https://support.microsoft.com/kb/185126
 	char path[_MAX_PATH];
 	throwLastError(::GetShortPathName(dir.c_str(), path, _MAX_PATH), format_string("failed GetShortPathName %s", dir.c_str()));
 	return path;
@@ -1525,7 +1525,7 @@ void Bootstrapper::writeAppSettings()
 	file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	file << "<Settings>\n";
 	file << "\t<ContentFolder>content</ContentFolder>\n";
-	file << "\t<BaseUrl>http://" << (const char *) baseHost.c_str() << "</BaseUrl>\n";
+	file << "\t<BaseUrl>https://" << (const char *) baseHost.c_str() << "</BaseUrl>\n";
 	file << "</Settings>\n";
 }
 
@@ -1592,7 +1592,7 @@ void Bootstrapper::CreateShortcuts(bool forceDesktopIconCreation, const TCHAR *l
 // The LABEL_SECURITY_INFORMATION SDDL SACL to be set for low integrity
 LPCWSTR LOW_INTEGRITY_SDDL_SACL_W = L"S:(ML;;NW;;;LW)";
  
-// http://www.codeproject.com/KB/vista-security/PMSurvivalGuide.aspx#creatingipc
+// https://www.codeproject.com/KB/vista-security/PMSurvivalGuide.aspx#creatingipc
 // This function lets RobloxProxy.dll access the mutex
 
 bool SetObjectToLowIntegrity(HANDLE hObject, SE_OBJECT_TYPE type = SE_KERNEL_OBJECT)
@@ -1626,7 +1626,7 @@ BOOL fSaclDefaulted = FALSE;
 void Bootstrapper::checkOSPrerequisit()
 {
 	LOG_ENTRY("checkOSPrerequisit");
-	// http://msdn.microsoft.com/en-us/library/ms725491(VS.85).aspx
+	// https://msdn.microsoft.com/en-us/library/ms725491(VS.85).aspx
 
 	{
 		OSVERSIONINFOEX osvi = {0};
@@ -1713,7 +1713,7 @@ bool Bootstrapper::isIEUpToDate()
 		return false;
 
 	// TODO: Parse version string properly
-	// http://support.microsoft.com/kb/164539
+	// https://support.microsoft.com/kb/164539
 	if (buffer[0]<'6')
 		return false;
 

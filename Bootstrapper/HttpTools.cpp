@@ -311,7 +311,7 @@ namespace HttpTools
 		// Initialize the User Agent
 		CInternet session = InternetOpen(_T("Roblox/WinInet"), PRE_CONFIG_INTERNET_ACCESS, NULL, NULL, 0);
 		if (!session)
-			throw std::runtime_error(format_string("InternetOpen failed for %s http://%s%s, Error Code: %d", method, host.c_str(), path.c_str(), GetLastError()).c_str());
+			throw std::runtime_error(format_string("InternetOpen failed for %s https://%s%s, Error Code: %d", method, host.c_str(), path.c_str(), GetLastError()).c_str());
 
 		CInternet connection;
 		if (urlCracked)
@@ -320,7 +320,7 @@ namespace HttpTools
 			connection = ::InternetConnect(session, convert_s2w(host).c_str(), 80, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 1);
 
 		if (!connection)
-			throw std::runtime_error(format_string("InternetConnect failed for %s http://%s%s, Error Code: %d, Port Number: %d", method, host.c_str(), path.c_str(), GetLastError() , urlCracked ? u.GetPortNumber() : 80).c_str());
+			throw std::runtime_error(format_string("InternetConnect failed for %s https://%s%s, Error Code: %d, Port Number: %d", method, host.c_str(), path.c_str(), GetLastError() , urlCracked ? u.GetPortNumber() : 80).c_str());
 
 		//   1. Open HTTP Request (pass method type [get/post/..] and URL path (except server name))
 		CInternet request = ::HttpOpenRequest(
@@ -333,7 +333,7 @@ namespace HttpTools
 		{
 			DWORD errorCode = GetLastError();
 
-			throw std::runtime_error(format_string("HttpOpenRequest failed for %s http://%s%s, Error Code: %d", method, host.c_str(), path.c_str(), errorCode).c_str());
+			throw std::runtime_error(format_string("HttpOpenRequest failed for %s https://%s%s, Error Code: %d", method, host.c_str(), path.c_str(), errorCode).c_str());
 		}
 
 		if (contentType)
@@ -447,11 +447,11 @@ namespace HttpTools
 		{
 			if (!etag.empty())
 			{
-				LLOG_ENTRY4(site->Logger(), "%s http://%s%s If-None-Match: \"%s\"", method, host.c_str(), path.c_str(), etag.c_str());
+				LLOG_ENTRY4(site->Logger(), "%s https://%s%s If-None-Match: \"%s\"", method, host.c_str(), path.c_str(), etag.c_str());
 			}
 			else
 			{
-				LLOG_ENTRY3(site->Logger(), "%s http://%s%s", method, host.c_str(), path.c_str());
+				LLOG_ENTRY3(site->Logger(), "%s https://%s%s", method, host.c_str(), path.c_str());
 			}
 		}
 
@@ -497,7 +497,7 @@ namespace HttpTools
 			if (log)
 			{
 				LLOG_ENTRY1(site->Logger(), "Failed to find an endpoint: %s", error.message().c_str());
-				LLOG_ENTRY3(site->Logger(), "Trying WinInet for %s http://%s%s", method, host.c_str(), path.c_str());
+				LLOG_ENTRY3(site->Logger(), "Trying WinInet for %s https://%s%s", method, host.c_str(), path.c_str());
 			}
 			return httpWinInet(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress);
 		}
@@ -554,7 +554,7 @@ namespace HttpTools
 			throw std::runtime_error("Invalid response");
 
 		if (log)
-			LLOG_ENTRY4(site->Logger(), "%s http://%s%s status_code:%d", method, host.c_str(), path.c_str(), status_code);
+			LLOG_ENTRY4(site->Logger(), "%s https://%s%s status_code:%d", method, host.c_str(), path.c_str(), status_code);
 
 		switch (status_code)
 		{
@@ -566,7 +566,7 @@ namespace HttpTools
 				if (log)
 				{
 					LLOG_ENTRY2(site->Logger(), "Response returned with bad status code %d: %s", status_code, status_message.c_str());
-					LLOG_ENTRY3(site->Logger(), "Trying WinInet for %s http://%s%s", method, host.c_str(), path.c_str());
+					LLOG_ENTRY3(site->Logger(), "Trying WinInet for %s https://%s%s", method, host.c_str(), path.c_str());
 				}
 				return httpWinInet(site, method, host, path, input, contentType, etag, result, ignoreCancel, progress);
 			}

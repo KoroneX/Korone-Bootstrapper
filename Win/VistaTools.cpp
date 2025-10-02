@@ -8,7 +8,7 @@ PARTICULAR PURPOSE.
 
 Copyright (C) 2006.  WinAbility Software Corporation. All rights reserved.
 
-Author: Andrei Belogortseff [ http://www.tweak-uac.com ]
+Author: Andrei Belogortseff [ https://www.tweak-uac.com ]
 
 TERMS OF USE: You are free to use this file in any way you like, 
 for both the commercial and non-commercial purposes, royalty-free,

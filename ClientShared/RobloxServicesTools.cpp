@@ -31,11 +31,11 @@ static std::string BuildGenericApiUrl(const std::string &baseUrl, const std::str
 
 	std::string subUrl = baseUrl.substr(0, pos);
     
-	if (subUrl == "www" || subUrl == "http://www" || subUrl == "https://www" || subUrl == "m" || subUrl == "http://m" ) //prod
+	if (subUrl == "www" || subUrl == "https://www" || subUrl == "https://www" || subUrl == "m" || subUrl == "https://m" ) //prod
 	{
 		subUrl = "";
 	}
-	std::string httpPrefix = "http://";
+	std::string httpPrefix = "https://";
 	pos = subUrl.find(httpPrefix);
 	if (pos != -1)
 	{

@@ -179,7 +179,7 @@ void CTaskDialog::run()
 	config.pszMainInstruction = L"Starting Pekora";
 	if (RBX_TDE_MESSAGE == TDE_EXPANDED_INFORMATION)
 	{
-		config.pszExpandedInformation = L"Please Wait...";		// http://msdn.microsoft.com/en-us/library/bb760536(VS.85).aspx states: If pszExpandedInformation is NULL and you attempt to send a TDM_UPDATE_ELEMENT_TEXT with TDE_EXPANDED_INFORMATION, nothing will happen.
+		config.pszExpandedInformation = L"Please Wait...";		// https://msdn.microsoft.com/en-us/library/bb760536(VS.85).aspx states: If pszExpandedInformation is NULL and you attempt to send a TDM_UPDATE_ELEMENT_TEXT with TDE_EXPANDED_INFORMATION, nothing will happen.
 	}
 
 	config.pfCallback = (PFTASKDIALOGCALLBACK)CTaskDialog::callback;

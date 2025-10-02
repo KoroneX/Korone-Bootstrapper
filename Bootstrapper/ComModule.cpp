@@ -99,7 +99,7 @@ void ComModule::registerModule(CRegKey &classesKey, std::wstring versionDir, sim
 	{
 		LOG_ENTRY1("LoadTypeLib %S", modulePath.c_str());
 
-		// See http://msdn.microsoft.com/en-us/library/bb756926.aspx regarding admin-level running
+		// See https://msdn.microsoft.com/en-us/library/bb756926.aspx regarding admin-level running
 		CComPtr<ITypeLib> typeLib;
 		CComBSTR s(modulePath.c_str());
 		throwHRESULT(::LoadTypeLib(s, &typeLib), format_string("LoadTypeLib failed for %S", modulePath.c_str()).c_str());
@@ -144,7 +144,7 @@ void ComModule::unregisterModule(HKEY ckey, bool isPerUser, simple_logger<wchar_
 	DeleteKey(logger, ckey, convert_s2w(progID).c_str());
 	DeleteKey(logger, ckey, convert_s2w(versionIndependentProgID).c_str());
 
-	// http://blogs.msdn.com/larryosterman/archive/2006/01/09/510856.aspx
+	// https://blogs.msdn.com/larryosterman/archive/2006/01/09/510856.aspx
 	DeleteSubKey(logger, ckey, _T("Typelib"), convert_s2w(typeLib).c_str());
 	DeleteSubKey(logger, ckey, _T("CLSID"), clsid.c_str());
 	DeleteSubKey(logger, ckey, _T("CLSID"), convert_s2w(versionIndependentProgID).c_str());

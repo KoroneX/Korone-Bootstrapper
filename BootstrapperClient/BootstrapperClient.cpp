@@ -754,7 +754,7 @@ void BootstrapperClient::StartRobloxApp(bool fromInstall)
 			{
 				if (url.find(_T("www.")) != 0 && url.find(_T("http:")) != 0) 
 				{
-					url = format_string(_T("http://%s"), url.c_str());
+					url = format_string(_T("https://%s"), url.c_str());
 				}
 				LOG_ENTRY1("Redirectings to page url=%S", url.c_str());
 				ShellExecute(0, _T("open"), url.c_str(), 0, 0, 1);
