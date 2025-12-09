@@ -630,7 +630,7 @@ Bootstrapper::~Bootstrapper(void)
 
 void Bootstrapper::postData(std::fstream &data)
 {
-	std::strstream result;
+	std::stringstream result;
 
 	CVersionInfo vi;
 	vi.Load(_AtlBaseModule.m_hInst);
@@ -639,7 +639,7 @@ void Bootstrapper::postData(std::fstream &data)
 	std::string url = format_string("/Error/InstallLog.ashx?version=%s&stage=%02d&guid=%d", v.c_str(), stage, reportStatGuid);
 	HttpTools::httpPost(this, GetUseDataDomain() ? ReplaceTopSubdomain(baseHost, "data") : baseHost, url, data, "text/plain", result, true, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 	result << (char)0;
-	LOG_ENTRY1("Uploading log file result: %s", result.str());
+	LOG_ENTRY1("Uploading log file result: %s", result.str().c_str());
 }
 
 static bool CmpFileTime(const WIN32_FIND_DATA &left, const WIN32_FIND_DATA &right)

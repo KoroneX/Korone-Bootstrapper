@@ -341,7 +341,7 @@ namespace HttpTools
 		if (contentType)
 		{
 			std::string header = format_string("Content-Type: %s\r\n", contentType);
-			throwLastError(::HttpAddRequestHeaders(request, convert_s2w(header).c_str(), header.size(), HTTP_ADDREQ_FLAG_ADD), "HttpAddRequestHeaders failed");
+			throwLastError(::HttpAddRequestHeaders(request, convert_s2w(header).c_str(), (DWORD)header.size(), HTTP_ADDREQ_FLAG_ADD), "HttpAddRequestHeaders failed");
 		}
 
 		size_t uploadSize;
@@ -368,7 +368,7 @@ namespace HttpTools
 				INTERNET_BUFFERS buffer;
 				memset(&buffer, 0, sizeof(buffer));
 				buffer.dwStructSize = sizeof(buffer);
-				buffer.dwBufferTotal = uploadSize;
+				buffer.dwBufferTotal = (DWORD)uploadSize;
 				if (!HttpSendRequestEx(request, &buffer, NULL, 0, 0))
 					throw std::runtime_error("HttpSendRequestEx failed");
 
