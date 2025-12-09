@@ -112,7 +112,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 			HDC hdcStatic = (HDC)wParam;
 			SetTextColor(hdcStatic, RGB(25, 25, 25));
 			SetBkMode(hdcStatic, TRANSPARENT);
-			return (LONG)hbrBackground;
+			return (LRESULT)hbrBackground;
 		}
 		break;
 	case WM_DESTROY:
