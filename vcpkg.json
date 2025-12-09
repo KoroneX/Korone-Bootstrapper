@@ -12,6 +12,10 @@
       "version>=": "1.81.0"
     },
     {
+      "name": "boost-foreach",
+      "version>=": "1.81.0"
+    },
+    {
       "name": "boost-lexical-cast",
       "version>=": "1.81.0"
     },
@@ -22,6 +26,13 @@
     {
       "name": "boost-thread",
       "version>=": "1.81.0"
+    },
+    {
+      "name": "cpr",
+      "version>=": "1.9.3",
+      "features": [
+        "ssl"
+      ]
     },
     {
       "name": "rapidjson",
