@@ -204,7 +204,7 @@ void CTaskDialog::run()
 
 void CTaskDialog::SetMessage(const char* value)
 {
-	boost::unique_lock<boost::mutex> lock(mut);
+	std::unique_lock<std::mutex> lock(mut);
 	if (message == value)
 		return;
 	message = value;
@@ -219,7 +219,7 @@ void CTaskDialog::SetMessage(const char* value)
 
 void CTaskDialog::SetCancelEnabled(bool state)
 {
-	boost::unique_lock<boost::mutex> lock(mut);
+	std::unique_lock<std::mutex> lock(mut);
 	if (state == cancelEnabled)
 		return;
 	cancelEnabled = state;
@@ -231,7 +231,7 @@ void CTaskDialog::SetCancelEnabled(bool state)
 
 void CTaskDialog::CloseDialog()
 {
-	boost::unique_lock<boost::mutex> lock(mut);
+	std::unique_lock<std::mutex> lock(mut);
 	if (!isStarted)
 	{
 		readyEvent.Set();
@@ -245,7 +245,7 @@ void CTaskDialog::CloseDialog()
 void CTaskDialog::ShowWindow()
 {
 	{
-		boost::unique_lock<boost::mutex> lock(mut);
+		std::unique_lock<std::mutex> lock(mut);
 		if (!isStarted)
 		{
 			boost::thread(boost::bind(&CTaskDialog::run, this));
@@ -296,7 +296,7 @@ void CTaskDialog::FinalMessage(const char* message)
 
 void CTaskDialog::SetProgress(int percent)
 {
-	boost::unique_lock<boost::mutex> lock(mut);
+	std::unique_lock<std::mutex> lock(mut);
 	if (percent == progress)
 		return;
 	progress = percent;
@@ -310,7 +310,7 @@ void CTaskDialog::SetProgress(int percent)
 
 void CTaskDialog::SetMarquee(bool state)
 {
-	boost::unique_lock<boost::mutex> lock(mut);
+	std::unique_lock<std::mutex> lock(mut);
 	if (isMarquee == state)
 		return;
 	isMarquee = state;

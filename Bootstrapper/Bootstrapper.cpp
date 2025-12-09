@@ -2236,7 +2236,7 @@ void Bootstrapper::run()
 
 done:
 	{
-		boost::lock_guard<boost::mutex> lock(mut);
+		boost::lock_guard<std::mutex> lock(mut);
 		done.notify_all();
 	}
 

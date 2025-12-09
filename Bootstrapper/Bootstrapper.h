@@ -5,10 +5,11 @@
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
+#include "boost/thread.hpp"
 #include <fstream>
 #include <vector>
+#include <chrono>
 #include "FileSystem.h"
 #include "format_string.h"
 #include <atlsync.h>
@@ -18,10 +19,11 @@
 #include "ComModule.h"
 #include "InfluxDbHelper.h"
 
+
 class Bootstrapper : public boost::enable_shared_from_this<Bootstrapper>, public IInstallerSite
 {
-	boost::condition_variable done;
-	boost::mutex mut;
+	std::condition_variable done;
+	std::mutex mut;
 
 	CHandle latestProcess;		// A shared file that contains the PID of the latest instance of this module
 	const DWORD mainThreadId;
@@ -84,8 +86,8 @@ class Bootstrapper : public boost::enable_shared_from_this<Bootstrapper>, public
 	void showWindowAfterDelay()
 	{
 		{
-			boost::unique_lock<boost::mutex> lock(mut);
-			if (done.timed_wait(lock, boost::get_system_time() + boost::posix_time::time_duration(0, 0, windowDelay)))
+			std::unique_lock<std::mutex> lock(mut);
+			if (done.wait_for(lock, std::chrono::seconds(windowDelay)) == std::cv_status::no_timeout)
 				return;
 		}
 
@@ -99,8 +101,8 @@ class Bootstrapper : public boost::enable_shared_from_this<Bootstrapper>, public
 	void showCancelAfterDelay()
 	{
 		{
-			boost::unique_lock<boost::mutex> lock(mut);
-			if (done.timed_wait(lock, boost::get_system_time() + boost::posix_time::time_duration(0, 0, cancelDelay)))
+			std::unique_lock<std::mutex> lock(mut);
+			if (done.wait_for(lock, std::chrono::seconds(cancelDelay)) == std::cv_status::no_timeout)
 				return;
 		}
 		dialog->ShowCancelButton(CMainDialog::CancelTimeDelayShow);
