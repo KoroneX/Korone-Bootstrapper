@@ -3,7 +3,6 @@
 #include "commonresourceconstants.h"
 #include "Maindialog.h"
 
-#include <boost/enable_shared_from_this.hpp>
 #include <functional>
 #include "boost/thread.hpp"
 #include <fstream>
