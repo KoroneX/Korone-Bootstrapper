@@ -289,6 +289,11 @@ namespace HttpTools
 			}
 
 			char* buffer = (char*)malloc(numBytes + 1);
+			if (!buffer)
+			{
+				throw std::runtime_error("httpGetString - Failed to allocate memory for buffer");
+			}
+
 			DWORD bytesRead;
 			throwLastError(::InternetReadFile(request, (LPVOID) buffer, numBytes, &bytesRead), "InternetReadFile failed");
 			data.write(buffer, bytesRead);
