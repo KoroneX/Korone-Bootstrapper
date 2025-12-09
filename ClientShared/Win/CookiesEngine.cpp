@@ -112,10 +112,10 @@ void CookiesEngine::ParseFileContent(std::fstream &f)
 	
 	std::string data(&buf[0]);
     
-	int s = 0;
+	size_t s = 0;
 	while(true)
 	{
-		int e = data.find(chars[0], s);
+		size_t e = data.find(chars[0], s);
 		if (e == -1)
 		{
 			break;
@@ -124,7 +124,7 @@ void CookiesEngine::ParseFileContent(std::fstream &f)
 		std::string pair = data.substr(s, e - s);
 		if (!pair.empty())
 		{
-			int m = pair.find(chars[1]);
+			size_t m = pair.find(chars[1]);
             
 			std::string key = pair.substr(0, m);
 			std::string value = pair.substr(m + 1, pair.length());
