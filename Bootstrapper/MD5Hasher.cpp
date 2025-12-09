@@ -42,12 +42,12 @@ void MD5Hasher::addData(std::istream& data)
 
 void MD5Hasher::addData(const std::string& data)
 {
-	throwLastError(CryptHashData(hHash, (const BYTE*)data.c_str(), data.length(), 0), "Failed CryptHashData");
+	throwLastError(CryptHashData(hHash, (const BYTE*)data.c_str(), (DWORD)data.length(), 0), "Failed CryptHashData");
 }
 
 void MD5Hasher::addData(const char* data, size_t nBytes)
 {
-	throwLastError(CryptHashData(hHash, (const BYTE*)data, nBytes, 0), "Failed CryptHashData");
+	throwLastError(CryptHashData(hHash, (const BYTE*)data, (DWORD)nBytes, 0), "Failed CryptHashData");
 }
 
 const char* MD5Hasher::c_str()
