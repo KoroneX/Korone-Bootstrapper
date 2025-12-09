@@ -375,7 +375,7 @@ namespace HttpTools
 				try
 				{
 					DWORD bytesWritten;
-					throwLastError(::InternetWriteFile(request, uploadBuffer, uploadSize, &bytesWritten), "InternetWriteFile failed");
+					throwLastError(::InternetWriteFile(request, uploadBuffer, (DWORD)uploadSize, &bytesWritten), "InternetWriteFile failed");
 
 					if (bytesWritten!=uploadSize)
 						throw std::runtime_error("Failed to upload content");
@@ -601,13 +601,13 @@ namespace HttpTools
 			if (response.size() > 0)
 			  result << &response;
 
-			progress(result.tellp(), contentLength);
+			progress(static_cast<int>(result.tellp()), static_cast<int>(contentLength));
 
 			// Read until EOF, writing data to output as we go.
 			while (boost::asio::read(socket, response, boost::asio::transfer_at_least(1), error))
 			{
 				result << &response;
-				progress(result.tellp(), contentLength);
+				progress(static_cast<int>(result.tellp()), static_cast<int>(contentLength));
 				if (!ignoreCancel)
 					site->CheckCancel();
 			}
