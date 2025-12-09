@@ -735,7 +735,7 @@ void Bootstrapper::parseCmdLine()
 		std::map<std::wstring, std::wstring> argMap;
 		for (unsigned int i = 0; i < argList.size(); i++)
 		{
-			int separatorPos = argList[i].find(_T(":"));
+			size_t separatorPos = argList[i].find(_T(":"));
 			if (separatorPos != std::string::npos)
 			{
 				std::wstring argName = argList[i].substr(0, separatorPos);

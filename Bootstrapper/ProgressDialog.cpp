@@ -151,7 +151,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	case WM_PROGRESS:
 		{
 			HWND prog = ::GetDlgItem(hwnd, IDC_PROGRESS);
-			DWORD style = GetWindowLongPtr(prog, GWL_STYLE);
+			LONG_PTR style = GetWindowLongPtr(prog, GWL_STYLE);
 			if ((style & PBS_MARQUEE) == 0)
 				::SendMessage(prog, PBM_SETPOS, wParam, 0);
 		}
@@ -159,7 +159,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	case WM_MARQUEE:
 		{
 			HWND prog = ::GetDlgItem(hwnd, IDC_PROGRESS);
-			DWORD style = GetWindowLongPtr(prog, GWL_STYLE);
+			LONG_PTR style = GetWindowLongPtr(prog, GWL_STYLE);
 			if (wParam)
 			{
 				if ((style & PBS_MARQUEE) == 0)
