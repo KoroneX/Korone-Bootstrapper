@@ -9,7 +9,6 @@
 #pragma comment (lib, "Wininet.lib")
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/lexical_cast.hpp>
 
 static const std::string sContentLength = "content-length: ";
 static const std::string sEtag = "etag: ";
@@ -125,11 +124,11 @@ namespace HttpTools
 					int totalValue = 0;
 					for (const boost::property_tree::ptree::value_type& child : ptree.get_child(""))
 					{
-						int value = boost::lexical_cast<int>(child.second.data());
+						int value = std::stoi(child.second.data());
 						if (cdns.size() > 0)
 							cdns.push_back(std::make_pair(child.first.data(), cdns.back().second + value));
 						else
-							cdns.push_back(std::make_pair(child.first.data(), boost::lexical_cast<int>(child.second.data())));
+							cdns.push_back(std::make_pair(child.first.data(), std::stoi(child.second.data())));
 
 						totalValue += value;
 					}
@@ -473,7 +472,7 @@ namespace HttpTools
 		// Get a list of endpoints corresponding to the server name.
 		tcp::resolver resolver(io_context);
 
-		std::string port = urlCracked ? boost::lexical_cast<std::string>(u.GetPortNumber()) : "http";
+		std::string port = urlCracked ? std::to_string(u.GetPortNumber()) : "http";
 		std::string hostName = urlCracked ? convert_w2s(u.GetHostName()) : host;
 		tcp::resolver::results_type endpoints = resolver.resolve(hostName, port);
 

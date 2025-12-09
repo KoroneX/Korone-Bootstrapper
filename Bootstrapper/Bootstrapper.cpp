@@ -22,7 +22,6 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <strstream>
 
@@ -762,7 +761,7 @@ void Bootstrapper::parseCmdLine()
 		iter = argMap.find(_T("launchtime"));
 		if (iter != argMap.end())
 		{
-			int64_t lt = boost::lexical_cast<int64_t>(iter->second);
+			int64_t lt = std::stoll(iter->second);
 			
 			boost::posix_time::ptime const epoch(boost::gregorian::date(1970, 1, 1));
 			int64_t ct = (boost::posix_time::microsec_clock::universal_time() - epoch).total_milliseconds();

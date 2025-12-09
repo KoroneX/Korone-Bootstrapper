@@ -4,15 +4,10 @@
   "builtin-baseline": "7e19f3c64cb636ee21f41bfe8558a6dfaae6236f",
   "dependencies": [
     "boost-asio",
-    "boost-lexical-cast",
     "boost-property-tree",
     "boost-thread",
     {
       "name": "boost-asio",
-      "version>=": "1.81.0"
-    },
-    {
-      "name": "boost-lexical-cast",
       "version>=": "1.81.0"
     },
     {
