@@ -28,11 +28,11 @@ struct TerminateAppEnumData
 	TCHAR windowTitle[256];
 };
 
-BOOL CALLBACK TerminateAppEnum( HWND hwnd, DWORD lParam )
+BOOL CALLBACK TerminateAppEnum( HWND hwnd, LPARAM lParam )
 {
 	DWORD dwID;
 	GetWindowThreadProcessId(hwnd, &dwID);
-	TerminateAppEnumData* data = (TerminateAppEnumData*) lParam;
+	TerminateAppEnumData* data = (TerminateAppEnumData*)lParam;
 	if (dwID == data->pid)
 		if (::IsWindowVisible(hwnd))
 		{
