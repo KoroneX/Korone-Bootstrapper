@@ -223,8 +223,6 @@ protected:
 
 	void deleteLegacyShortcuts();
 
-	void validateAndFixChromeState();
-
 	HWND GetHwndFromPID(DWORD pid);
 
 public:
