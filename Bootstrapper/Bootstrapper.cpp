@@ -1343,7 +1343,7 @@ std::string Bootstrapper::fetchVersionGuidFromWeb(std::string product)
 {
 	if (GetUseNewVersionFetch() && BinaryType() != "")
 	{
-		//std::ostrstream result;
+		//std::ostringstream result;
 		//HttpTools::httpGet(this, BaseHost(), "/game/ClientVersion.ashx", std::string(), result, false, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 		//result << (char) 0;
 		//return result.str();
@@ -1359,13 +1359,13 @@ std::string Bootstrapper::fetchVersionGuidFromWeb(std::string product)
 	}
 	else
 	{
-		std::ostrstream result;
+		std::ostringstream result;
 		std::string vsubpath = "/" + product + "?guid%d";
 		std::string eTag;
 		HttpTools::httpGet(this, installHost, format_string(vsubpath.c_str(), reportStatGuid), eTag, result, false, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 		result << (char) 0;
 
-		return result.str();
+		return result.str().c_str();
 	}
 }
 
@@ -1396,11 +1396,12 @@ bool Bootstrapper::checkBootstrapperVersion()
 	std::string bootstrapperVersion;
 	try
 	{
-		std::ostrstream result;
+		std::ostringstream result;
 		std::string eTag;
 		HttpTools::httpGet(this, installHost, format_string("/%s-%S", installVersion.c_str(), GetVersionFileName()), eTag, result, false, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 		result << (char) 0;
-		bootstrapperVersion = result.str();
+		bootstrapperVersion = result.str().c_str();
+
 	}
 	catch (cancel_exception&)
 	{

@@ -5,7 +5,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include "wininet.h"
-#include <strstream>
+#include <sstream>
 #pragma comment (lib, "Wininet.lib")
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -63,7 +63,7 @@ namespace HttpTools
 			} else {
 				try
 				{
-					std::ostrstream result;
+					std::ostringstream result;
 					int status_code;
 					std::string eTag;
 					switch(status_code = httpGet(site, site->InstallHost(), "/cdn.txt", eTag, result, false, boost::bind(&dummyProgress, _1, _2)))
@@ -71,7 +71,7 @@ namespace HttpTools
 						case 200:
 						case 304:
 							result << (char) 0;
-							cdnHost = result.str();
+							cdnHost = result.str().c_str();
 							LLOG_ENTRY1(site->Logger(), "primaryCdn: %s", cdnHost.c_str());
 							validCdnHost = true;
 							break;
@@ -105,7 +105,7 @@ namespace HttpTools
 		{
 			try
 			{
-				std::ostrstream result;
+				std::ostringstream result;
 				std::string eTag;
 				int statusCode = httpGet(site, site->BaseHost(), "/install/GetInstallerCdns.ashx", eTag, result, false, boost::bind(&dummyProgress, _1, _2));
 				switch(statusCode)
@@ -114,7 +114,7 @@ namespace HttpTools
 				case 304:
 				{
 					result << (char) 0;
-					LLOG_ENTRY1(site->Logger(), "primaryCdns: %s", result.str());
+					LLOG_ENTRY1(site->Logger(), "primaryCdns: %s", result.str().c_str());
 
 					std::stringstream stream(result.str());
 					boost::property_tree::ptree ptree;
@@ -205,7 +205,7 @@ namespace HttpTools
 		try
 		{
 			std::string tmp = etag;
-			std::strstream input;
+			std::istringstream input;
 			int i = http(site, "GET", host, path, input, NULL, tmp, result, ignoreCancel, progress, log);
 			etag = tmp;
 			return i;
@@ -217,7 +217,7 @@ namespace HttpTools
 		catch (std::exception& e)
 		{
 			LLOG_ENTRY2(site->Logger(), "WARNING: First HTTP GET error for %s: %s", path.c_str(), exceptionToString(e).c_str());
-			std::strstream input;
+			std::istringstream input;
 			result.seekp(0);
 			result.clear();
 			// try again
