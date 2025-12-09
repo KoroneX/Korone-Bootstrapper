@@ -85,7 +85,6 @@ protected:
 	virtual HRESULT SheduleRobloxUpdater();
 	virtual HRESULT UninstallRobloxUpdater();
 	
-	virtual void SetupGoogleAnalytics();
 	virtual bool ValidateInstalledExeVersion();
 	virtual bool IsInstalledVersionUptodate();
 

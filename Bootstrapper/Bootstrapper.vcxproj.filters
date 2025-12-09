@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="zlib">
-      <UniqueIdentifier>{ea7cdc63-e3de-4e3c-8c35-65010f7adc6b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="cabsdk">
       <UniqueIdentifier>{585fbf90-9c59-4a3c-9a7c-c6747431b20c}</UniqueIdentifier>
     </Filter>
@@ -34,9 +31,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FileSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GoogleAnalyticsHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HttpTools.cpp">
@@ -73,9 +67,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ClientShared\format_string.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ClientShared\InfluxDbHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ClientShared\RobloxServicesTools.cpp">

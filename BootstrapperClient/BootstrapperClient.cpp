@@ -18,7 +18,6 @@
 #include "ProcessInformation.h"
 #include "shellapi.h"
 #include <iphlpapi.h>
-#include "GoogleAnalyticsHelper.h"
 #include "VersionInfo.h"
 #include "StringConv.h"
 #include "ClientProgressDialog.h"
@@ -151,11 +150,6 @@ void BootstrapperClient::LoadSettings()
 	catch (std::exception e)
 	{
 	}
-}
-
-void BootstrapperClient::SetupGoogleAnalytics()
-{
-	GoogleAnalyticsHelper::init(settings.GetValueGoogleAnalyticsAccountPropertyID());
 }
 
 bool BootstrapperClient::ValidateInstalledExeVersion()

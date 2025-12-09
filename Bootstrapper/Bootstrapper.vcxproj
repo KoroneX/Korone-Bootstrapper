@@ -220,7 +220,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\ClientShared\InfluxDbHelper.cpp" />
     <ClCompile Include="..\ClientShared\RobloxServicesTools.cpp" />
     <ClCompile Include="..\ClientShared\StringConv.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -253,7 +252,6 @@
     <ClCompile Include="ComModule.cpp" />
     <ClCompile Include="FileDeployer.cpp" />
     <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="GoogleAnalyticsHelper.cpp" />
     <ClCompile Include="HttpTools.cpp" />
     <ClCompile Include="LegacyDialog.cpp" />
     <ClCompile Include="MainDialog.cpp" />

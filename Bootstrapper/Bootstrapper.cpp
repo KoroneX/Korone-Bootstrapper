@@ -38,7 +38,6 @@
 #include "CookiesEngine.h"
 #include "SharedHelpers.h"
 #include "HttpTools.h"
-#include "GoogleAnalyticsHelper.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
@@ -1286,12 +1285,6 @@ void Bootstrapper::DoDeployComponents(const std::vector<std::pair<std::wstring, 
 			installUrl = HttpTools::getCdnHost(this);
 		if (installUrl.empty())
 			installUrl = HttpTools::getPrimaryCdnHost(this);
-
-		if (Type() == "Client")
-		{
-			GoogleAnalyticsHelper::trackUserTiming(logger, GA_CATEGORY_NAME, "ClientInstallTime", elapsedMillis, installUrl.empty() ? installHost.c_str() : installUrl.c_str());
-			GoogleAnalyticsHelper::trackEvent(logger, GA_CATEGORY_NAME, "ClientInstallThroughput bytes/sec", installUrl.empty() ? installHost.c_str() : installUrl.c_str(), deployer->GetBytesDownloaded() / (elapsedMillis / 1000.0f));
-		}
 	}
 
 	dialog->SetMarquee(true);
@@ -2088,10 +2081,6 @@ void Bootstrapper::run()
 				{
 					if (!IsInstalledVersionUptodate())
 					{
-						// track version mismatch
-						if (!GoogleAnalyticsHelper::trackEvent(logger, GA_CATEGORY_NAME, "VersionMismatch"))
-							LOG_ENTRY("WARNING: failed to log version mismatch");
-
 						if (ValidateInstalledExeVersion())
 						{
 							LOG_ENTRY("RobloxApp version mismatch, forcing reinstall.");
@@ -2174,10 +2163,6 @@ void Bootstrapper::run()
 							label += "Install";
 						if (force)
 							label += "Force";
-
-						// track version mismatch
-						if (!GoogleAnalyticsHelper::trackEvent(logger, GA_CATEGORY_NAME, "VersionMismatchPostInstall", label.c_str()))
-							LOG_ENTRY("WARNING: failed to log version mismatch post install");
 
 						LOG_ENTRY("WARNING: client version not up to date after install.");
 						postLogFile(false);
