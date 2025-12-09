@@ -90,7 +90,7 @@ public:
 
 		int result = 0;
 		{
-			boost::shared_ptr<Bootstrapper> bootstrapper;
+			std::shared_ptr<Bootstrapper> bootstrapper;
 			bool encounteredProblem = false;
 			try
 			{
@@ -914,9 +914,9 @@ bool Bootstrapper::hasSse2()
 	return (featureBits & (1 << kSse2BitLoc)) != 0;
 }
 
-boost::shared_ptr<Bootstrapper> Bootstrapper::Create(HINSTANCE hInstance, Bootstrapper*(*newBootstrapper)(HINSTANCE))
+std::shared_ptr<Bootstrapper> Bootstrapper::Create(HINSTANCE hInstance, Bootstrapper*(*newBootstrapper)(HINSTANCE))
 {
-	boost::shared_ptr<Bootstrapper> result(newBootstrapper(hInstance));
+	std::shared_ptr<Bootstrapper> result(newBootstrapper(hInstance));
 
 	result->initialize();
 

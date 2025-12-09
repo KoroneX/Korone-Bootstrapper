@@ -7,7 +7,6 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
-#include "boost/thread.hpp"
 #include <fstream>
 #include <vector>
 #include "FileSystem.h"
@@ -231,7 +230,7 @@ public:
 
 	virtual ~Bootstrapper(void);
 	
-	static boost::shared_ptr<Bootstrapper> Create(HINSTANCE hInstance, Bootstrapper*(*newBootstrapper)(HINSTANCE));
+	static std::shared_ptr<Bootstrapper> Create(HINSTANCE hInstance, Bootstrapper*(*newBootstrapper)(HINSTANCE));
 	static bool hasSse2();
 	
 	virtual std::wstring programDirectory() const;			  // Local location for installing components to
