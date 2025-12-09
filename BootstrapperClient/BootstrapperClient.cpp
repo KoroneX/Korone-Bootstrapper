@@ -22,6 +22,7 @@
 #include "StringConv.h"
 #include "ClientProgressDialog.h"
 #include "RobloxServicesTools.h"
+#include <VersionHelpers.h>
 
 static const TCHAR* BootstrapperFileName    = _T("PekoraPlayerLauncher.exe");
 static const TCHAR* RobloxAppFileName		= _T(PLAYEREXENAME);
@@ -408,18 +409,13 @@ HRESULT BootstrapperClient::SheduleRobloxUpdater()
 		return S_OK;
 	}
 
-	OSVERSIONINFO osver = {0};
-
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	::GetVersionEx(&osver);
-
-	if (osver.dwMajorVersion == 5)
-	{
-		return SheduleTaskWinXP();
-	}
-	else if (osver.dwMajorVersion >= 6)
+	if (IsWindowsVistaOrGreater())
 	{
 		return SheduleTaskWinVista();
+	}
+	else if (IsWindowsXPOrGreater())
+	{
+		return SheduleTaskWinXP();
 	}
 
 	return S_OK;
@@ -427,26 +423,10 @@ HRESULT BootstrapperClient::SheduleRobloxUpdater()
 
 HRESULT BootstrapperClient::UninstallRobloxUpdater()
 {
-	OSVERSIONINFO osver = {0};
 	HRESULT hr = S_OK;
 
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	::GetVersionEx(&osver);
-
-	if (osver.dwMajorVersion == 5)
+	if (IsWindowsVistaOrGreater())
 	{
-		CComPtr<ITaskScheduler> scheduler;
-		hr = CoCreateInstance(CLSID_CTaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskScheduler, (void **)&scheduler);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
-
-		hr = scheduler->Delete(robloxUpdaterTaskName);
-	}
-	else if (osver.dwMajorVersion >= 6)
-	{
-
 		CComPtr<ITaskService> service;
 		hr = CoCreateInstance(CLSID_TaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskService, (void**)&service);
 		if (FAILED(hr))
@@ -460,13 +440,24 @@ HRESULT BootstrapperClient::UninstallRobloxUpdater()
 		}
 
 		CComPtr<ITaskFolder> rootFolder;
-		hr = service->GetFolder(_bstr_t( L"\\"), &rootFolder);
+		hr = service->GetFolder(_bstr_t(L"\\"), &rootFolder);
 		if (FAILED(hr))
 		{
 			return hr;
 		}
 
 		hr = rootFolder->DeleteTask(_bstr_t(robloxUpdaterTaskName), 0);
+	}
+	else if (IsWindowsXPOrGreater())
+	{
+		CComPtr<ITaskScheduler> scheduler;
+		hr = CoCreateInstance(CLSID_CTaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskScheduler, (void**)&scheduler);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		hr = scheduler->Delete(robloxUpdaterTaskName);
 	}
 
 	return hr;

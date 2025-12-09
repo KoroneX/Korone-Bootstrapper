@@ -6,7 +6,7 @@
 
 #include <windows.h>
 #include <Psapi.h>
-
+#include <VersionHelpers.h>
 #include "VersionInfo.h"
 #include "FileSystem.h"
 #include "atlpath.h"
@@ -257,26 +257,12 @@ int BootstrapperMain(HINSTANCE hInstance, int nCmdShow, Bootstrapper*(*newBootst
 
 bool IsWinXP()
 {
-	OSVERSIONINFO osver = {0};
-
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	
-	if (::GetVersionEx(&osver) && osver.dwPlatformId == VER_PLATFORM_WIN32_NT && osver.dwMajorVersion == 5)
-		return true;
-
-	return false;
+	return IsWindowsXPOrGreater() && !IsWindowsVistaOrGreater();
 }
 
 bool IsWin7()
 {
-	OSVERSIONINFO osver = {0};
-
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	
-	if (::GetVersionEx(&osver) && osver.dwMajorVersion == 6 && osver.dwMinorVersion == 1)
-		return true;
-
-	return false;
+	return IsWindows7OrGreater() && !IsWindows8OrGreater();
 }
 
 #include <atlsecurity.h>
@@ -1621,18 +1607,6 @@ void Bootstrapper::checkOSPrerequisit()
 {
 	LOG_ENTRY("checkOSPrerequisit");
 	// https://msdn.microsoft.com/en-us/library/ms725491(VS.85).aspx
-
-	{
-		OSVERSIONINFOEX osvi = {0};
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-		GetVersionEx((OSVERSIONINFO*)&osvi);
-		LOG_ENTRY1("OSVERSIONINFO.dwMajorVersion %d", osvi.dwMajorVersion);
-		LOG_ENTRY1("OSVERSIONINFO.wServicePackMajor %d", osvi.wServicePackMajor);
-		LOG_ENTRY1("OSVERSIONINFO.wServicePackMajor %d", osvi.wServicePackMajor);
-		LOG_ENTRY1("OSVERSIONINFO.wServicePackMinor %d", osvi.wServicePackMinor);
-		LOG_ENTRY1("OSVERSIONINFO.dwBuildNumber %d", osvi.dwBuildNumber);
-		LOG_ENTRY1("OSVERSIONINFO.dwPlatformId %d", osvi.dwPlatformId);
-	}
 
 	// Initialize the condition mask.
 

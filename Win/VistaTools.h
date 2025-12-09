@@ -1,6 +1,6 @@
 #pragma once
 #include "shlobj.h"
-
+#include <VersionHelpers.h>
 bool IsVistaPlus();
 
 bool Is64BitWindows();
@@ -127,12 +127,6 @@ public:
 
 	bool isVistaOrBetter()
 	{
-		//return if not Windows Vista or later
-		OSVERSIONINFO osvi = {0};
-		osvi.dwOSVersionInfoSize=sizeof(osvi);
-		GetVersionEx (&osvi);
-		if(osvi.dwMajorVersion<6)
-			return false;
-		return true;
+		return IsWindowsVistaOrGreater();
 	}
 };
