@@ -43,6 +43,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <sstream>
 #include <format>
+#include <bit>
 #include "Sensapi.h"
 #pragma comment(lib, "Sensapi.lib")
 
