@@ -7,8 +7,6 @@
 #include "wininet.h"
 #include <strstream>
 #pragma comment (lib, "Wininet.lib")
-
-#include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/lexical_cast.hpp>
@@ -125,7 +123,7 @@ namespace HttpTools
 
 					std::vector<std::pair<std::string, int>> cdns;
 					int totalValue = 0;
-					BOOST_FOREACH(const boost::property_tree::ptree::value_type& child, ptree.get_child(""))
+					for (const boost::property_tree::ptree::value_type& child : ptree.get_child(""))
 					{
 						int value = boost::lexical_cast<int>(child.second.data());
 						if (cdns.size() > 0)
