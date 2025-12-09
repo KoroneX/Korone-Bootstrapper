@@ -159,7 +159,7 @@ namespace HttpTools
 					break;
 				}
 			}
-			catch(std::exception& e)
+			catch(std::exception&)
 			{
 				LLOG_ENTRY(site->Logger(), "primaryCdn exception, falling back to secondary installHost");
 			}

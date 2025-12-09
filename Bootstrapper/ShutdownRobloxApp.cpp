@@ -40,7 +40,7 @@ BOOL CALLBACK TerminateAppEnum( HWND hwnd, DWORD lParam )
 			SetForegroundWindow(hwnd);
 			PostMessage(hwnd, WM_CLOSE, 0, 0);
 			data->foundOne = true;
-			::GetWindowText(hwnd, data->windowTitle, sizeof(data->windowTitle));
+			::GetWindowText(hwnd, data->windowTitle, _countof(data->windowTitle));
 		}
 	return TRUE;
 }
