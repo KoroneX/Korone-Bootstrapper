@@ -512,7 +512,7 @@ void Bootstrapper::initialize()
 		}
 
 		LOG_ENTRY1("perUser = %d", perUser);
-		deployer.reset(new FileDeployer(this, perUser));
+		deployer = std::make_unique<FileDeployer>(this, perUser);
 		LOG_ENTRY("Bootstrapper::initialize - calling loadPrevVersions");
 		loadPrevVersions();
 

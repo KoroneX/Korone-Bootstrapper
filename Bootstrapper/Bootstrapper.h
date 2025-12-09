@@ -4,7 +4,6 @@
 #include "Maindialog.h"
 
 #include <boost/enable_shared_from_this.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/function.hpp>
 #include "boost/thread.hpp"
 #include <fstream>
@@ -152,8 +151,8 @@ protected:
 	HINSTANCE hInstance;
 	HWND launchedAppHwnd;
 
-	boost::scoped_ptr<CMainDialog> dialog;
-	boost::scoped_ptr<FileDeployer> deployer;
+	std::unique_ptr<CMainDialog> dialog;
+	std::unique_ptr<FileDeployer> deployer;
 	CRegKey classesKey;
 
 	//TODO move this into client part
