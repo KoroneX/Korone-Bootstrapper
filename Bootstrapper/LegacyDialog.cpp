@@ -39,7 +39,7 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CLOSE:
 		EndDialog(hDlg, LOWORD(wParam));
-		if (dialog && !dialog->closeCallback.empty())
+		if (dialog && dialog->closeCallback)
 			dialog->closeCallback();
 		return (INT_PTR)TRUE;
 
@@ -47,7 +47,7 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		if (LOWORD(wParam) == IDCANCEL)
 		{
 			EndDialog(hDlg, LOWORD(wParam));
-			if (dialog && !dialog->closeCallback.empty())
+			if (dialog && dialog->closeCallback)
 				dialog->closeCallback();
 			return (INT_PTR)TRUE;
 		}

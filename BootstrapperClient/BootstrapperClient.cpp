@@ -7,7 +7,7 @@
 #include <comdef.h>
 #include <taskschd.h>
 #include <mstask.h>
-#include <boost/function.hpp>
+#include <functional>
 #include <ostream>
 #include <fstream>
 #include <strstream>

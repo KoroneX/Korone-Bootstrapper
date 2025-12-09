@@ -192,7 +192,7 @@ void CTaskDialog::run()
 	case IDOK:
 		break; // the user pressed button 0 (change password).
 	case IDCANCEL:
-		if (!closeCallback.empty())
+		if (closeCallback)
 			closeCallback();
 		break; // user cancelled the dialog
 	default:

@@ -4,7 +4,7 @@
 #include "Maindialog.h"
 
 #include <boost/enable_shared_from_this.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include "boost/thread.hpp"
 #include <fstream>
 #include <vector>

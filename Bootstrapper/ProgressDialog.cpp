@@ -101,7 +101,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 		if (LOWORD(wParam) == IDCANCEL)
 		{
 			SendMessage(hwnd, WM_CLOSE, 0, 0);
-			if (dialog && !dialog->closeCallback.empty())
+			if (dialog && dialog->closeCallback)
 				dialog->closeCallback();
 		}
 		break;
@@ -118,7 +118,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	case WM_DESTROY:
 		// This message could be sent if dialog was closed from taskbar and bypassed CloseDialog(),
 		// so call the closeCallback to indicate it's a user cancel
-		if (dialog && !dialog->dialogClosing && !dialog->closeCallback.empty())
+		if (dialog && !dialog->dialogClosing && dialog->closeCallback)
 			dialog->closeCallback();
 
 		PostQuitMessage(0);

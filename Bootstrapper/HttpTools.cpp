@@ -36,9 +36,9 @@ namespace HttpTools
 		}
 	};
 
-	int httpWinInet(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress);
-	int httpBoost(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress);
-	int http(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log = true);
+	int httpWinInet(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress);
+	int httpBoost(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress);
+	int http(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress, bool log = true);
 
 	static void dummyProgress(int, int) {}
 	const std::string getPrimaryCdnHost(IInstallerSite *site)
@@ -201,7 +201,7 @@ namespace HttpTools
 		operator char*() { return (char*)data; }
 	};
 
-	int httpGet(IInstallerSite *site, std::string host, std::string path, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log)
+	int httpGet(IInstallerSite *site, std::string host, std::string path, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress, bool log)
 	{
 		try
 		{
@@ -301,7 +301,7 @@ namespace HttpTools
 		return data.str();
 	}
 
-	int httpWinInet(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress)
+	int httpWinInet(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress)
 	{
 		CUrl u;
 		BOOL urlCracked;
@@ -444,7 +444,7 @@ namespace HttpTools
 		return statusCode;
 	}
 
-	int httpBoost(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log)
+	int httpBoost(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress, bool log)
 	{
 		if (log)
 		{
@@ -621,7 +621,7 @@ namespace HttpTools
 		return status_code;
 	}
 
-	int http(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log)
+	int http(IInstallerSite *site, const char* method, const std::string& host, const std::string& path, std::istream& input, const char* contentType, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress, bool log)
 	{
 		try
 		{
@@ -634,13 +634,13 @@ namespace HttpTools
 		}
 	}
 
-	int httpPost(IInstallerSite *site, std::string host, std::string path, std::istream& input, const char* contentType, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress, bool log)
+	int httpPost(IInstallerSite *site, std::string host, std::string path, std::istream& input, const char* contentType, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress, bool log)
 	{
 		std::string etag;
 		return http(site, "POST", host, path, input, contentType, etag, result, ignoreCancel, progress, log);
 	}
 
-	int httpGetCdn(IInstallerSite *site, std::string secondaryHost, std::string path, std::string& etag, std::ostream& result, bool ignoreCancel, boost::function<void(int, int)> progress)
+	int httpGetCdn(IInstallerSite *site, std::string secondaryHost, std::string path, std::string& etag, std::ostream& result, bool ignoreCancel, std::function<void(int, int)> progress)
 	{
 		std::string cdnHost;
 		if (site->UseNewCdn())
