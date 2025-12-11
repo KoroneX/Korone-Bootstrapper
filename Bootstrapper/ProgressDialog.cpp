@@ -101,7 +101,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 		if (LOWORD(wParam) == IDCANCEL)
 		{
 			SendMessage(hwnd, WM_CLOSE, 0, 0);
-			if (dialog && !dialog->closeCallback.empty())
+			if (dialog && dialog->closeCallback)
 				dialog->closeCallback();
 		}
 		break;
@@ -112,13 +112,13 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 			HDC hdcStatic = (HDC)wParam;
 			SetTextColor(hdcStatic, RGB(25, 25, 25));
 			SetBkMode(hdcStatic, TRANSPARENT);
-			return (LONG)hbrBackground;
+			return (LRESULT)hbrBackground;
 		}
 		break;
 	case WM_DESTROY:
 		// This message could be sent if dialog was closed from taskbar and bypassed CloseDialog(),
 		// so call the closeCallback to indicate it's a user cancel
-		if (dialog && !dialog->dialogClosing && !dialog->closeCallback.empty())
+		if (dialog && !dialog->dialogClosing && dialog->closeCallback)
 			dialog->closeCallback();
 
 		PostQuitMessage(0);
@@ -151,7 +151,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	case WM_PROGRESS:
 		{
 			HWND prog = ::GetDlgItem(hwnd, IDC_PROGRESS);
-			DWORD style = GetWindowLongPtr(prog, GWL_STYLE);
+			LONG_PTR style = GetWindowLongPtr(prog, GWL_STYLE);
 			if ((style & PBS_MARQUEE) == 0)
 				::SendMessage(prog, PBM_SETPOS, wParam, 0);
 		}
@@ -159,7 +159,7 @@ LRESULT CALLBACK CProgressDialog::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	case WM_MARQUEE:
 		{
 			HWND prog = ::GetDlgItem(hwnd, IDC_PROGRESS);
-			DWORD style = GetWindowLongPtr(prog, GWL_STYLE);
+			LONG_PTR style = GetWindowLongPtr(prog, GWL_STYLE);
 			if (wParam)
 			{
 				if ((style & PBS_MARQUEE) == 0)

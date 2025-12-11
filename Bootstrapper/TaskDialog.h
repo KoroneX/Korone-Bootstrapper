@@ -12,7 +12,7 @@ class CTaskDialog : public CMainDialog
 	CEvent doneEvent;
 	HINSTANCE instance;
 	HWND taskWnd;
-	boost::mutex mut;
+	std::mutex mut;
 	bool isMarquee;
 	int progress;
 	bool cancelEnabled;

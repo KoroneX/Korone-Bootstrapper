@@ -55,17 +55,27 @@ private:
 	bool m_bLocked;
 };
 
+template<typename T>
+inline const void* to_voidptr(T value) {
+	if constexpr (std::is_pointer_v<T>) {
+		return reinterpret_cast<const void*>(value);
+	}
+	else {
+		return reinterpret_cast<const void*>(static_cast<uintptr_t>(value));
+	}
+}
+
 #define LOG_ENTRY(msg) logger.write_logentry(msg)
-#define LOG_ENTRY1(msg, a1) logger.write_logentry(msg, reinterpret_cast<const void*>(a1))
-#define LOG_ENTRY2(msg, a1, a2) logger.write_logentry(msg, reinterpret_cast<const void*>(a1), reinterpret_cast<const void*>(a2))
-#define LOG_ENTRY3(msg, a1, a2, a3) logger.write_logentry(msg, reinterpret_cast<const void*>(a1), reinterpret_cast<const void*>(a2), reinterpret_cast<const void*>(a3))
-#define LOG_ENTRY4(msg, a1, a2, a3, a4) logger.write_logentry(msg, reinterpret_cast<const void*>(a1), reinterpret_cast<const void*>(a2), reinterpret_cast<const void*>(a3), reinterpret_cast<const void*>(a4))
+#define LOG_ENTRY1(msg, a1) logger.write_logentry(msg, to_voidptr(a1))
+#define LOG_ENTRY2(msg, a1, a2) logger.write_logentry(msg, to_voidptr(a1), to_voidptr(a2))
+#define LOG_ENTRY3(msg, a1, a2, a3) logger.write_logentry(msg, to_voidptr(a1), to_voidptr(a2), to_voidptr(a3))
+#define LOG_ENTRY4(msg, a1, a2, a3, a4) logger.write_logentry(msg, to_voidptr(a1), to_voidptr(a2), to_voidptr(a3), to_voidptr(a4))
 
 #define LLOG_ENTRY(logger, msg) logger.write_logentry(msg)
-#define LLOG_ENTRY1(logger, msg, a1) logger.write_logentry(msg, reinterpret_cast<const void*>(a1))
-#define LLOG_ENTRY2(logger, msg, a1, a2) logger.write_logentry(msg, reinterpret_cast<const void*>(a1), reinterpret_cast<const void*>(a2))
-#define LLOG_ENTRY3(logger, msg, a1, a2, a3) logger.write_logentry(msg, reinterpret_cast<const void*>(a1), reinterpret_cast<const void*>(a2), reinterpret_cast<const void*>(a3))
-#define LLOG_ENTRY4(logger, msg, a1, a2, a3, a4) logger.write_logentry(msg, reinterpret_cast<const void*>(a1), reinterpret_cast<const void*>(a2), reinterpret_cast<const void*>(a3), reinterpret_cast<const void*>(a4))
+#define LLOG_ENTRY1(logger, msg, a1) logger.write_logentry(msg, to_voidptr(a1))
+#define LLOG_ENTRY2(logger, msg, a1, a2) logger.write_logentry(msg, to_voidptr(a1), to_voidptr(a2))
+#define LLOG_ENTRY3(logger, msg, a1, a2, a3) logger.write_logentry(msg, to_voidptr(a1), to_voidptr(a2), to_voidptr(a3))
+#define LLOG_ENTRY4(logger, msg, a1, a2, a3, a4) logger.write_logentry(msg, to_voidptr(a1), to_voidptr(a2), to_voidptr(a3), to_voidptr(a4))
 
 #define FIREFOXREGKEY               "@nsroblox.pekora.zip/launcher"
 #define FIREFOXREGKEY64             "@nsroblox.pekora.zip/launcher64"

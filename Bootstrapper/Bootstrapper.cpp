@@ -6,7 +6,7 @@
 
 #include <windows.h>
 #include <Psapi.h>
-
+#include <VersionHelpers.h>
 #include "VersionInfo.h"
 #include "FileSystem.h"
 #include "atlpath.h"
@@ -22,7 +22,6 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <strstream>
 
@@ -44,6 +43,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <sstream>
 #include <format>
+#include <bit>
 #include "Sensapi.h"
 #pragma comment(lib, "Sensapi.lib")
 
@@ -90,7 +90,7 @@ public:
 
 		int result = 0;
 		{
-			boost::shared_ptr<Bootstrapper> bootstrapper;
+			std::shared_ptr<Bootstrapper> bootstrapper;
 			bool encounteredProblem = false;
 			try
 			{
@@ -257,26 +257,12 @@ int BootstrapperMain(HINSTANCE hInstance, int nCmdShow, Bootstrapper*(*newBootst
 
 bool IsWinXP()
 {
-	OSVERSIONINFO osver = {0};
-
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	
-	if (::GetVersionEx(&osver) && osver.dwPlatformId == VER_PLATFORM_WIN32_NT && osver.dwMajorVersion == 5)
-		return true;
-
-	return false;
+	return IsWindowsXPOrGreater() && !IsWindowsVistaOrGreater();
 }
 
 bool IsWin7()
 {
-	OSVERSIONINFO osver = {0};
-
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	
-	if (::GetVersionEx(&osver) && osver.dwMajorVersion == 6 && osver.dwMinorVersion == 1)
-		return true;
-
-	return false;
+	return IsWindows7OrGreater() && !IsWindows8OrGreater();
 }
 
 #include <atlsecurity.h>
@@ -512,7 +498,7 @@ void Bootstrapper::initialize()
 		}
 
 		LOG_ENTRY1("perUser = %d", perUser);
-		deployer.reset(new FileDeployer(this, perUser));
+		deployer = std::make_unique<FileDeployer>(this, perUser);
 		LOG_ENTRY("Bootstrapper::initialize - calling loadPrevVersions");
 		loadPrevVersions();
 
@@ -630,7 +616,7 @@ Bootstrapper::~Bootstrapper(void)
 
 void Bootstrapper::postData(std::fstream &data)
 {
-	std::strstream result;
+	std::stringstream result;
 
 	CVersionInfo vi;
 	vi.Load(_AtlBaseModule.m_hInst);
@@ -639,7 +625,7 @@ void Bootstrapper::postData(std::fstream &data)
 	std::string url = format_string("/Error/InstallLog.ashx?version=%s&stage=%02d&guid=%d", v.c_str(), stage, reportStatGuid);
 	HttpTools::httpPost(this, GetUseDataDomain() ? ReplaceTopSubdomain(baseHost, "data") : baseHost, url, data, "text/plain", result, true, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 	result << (char)0;
-	LOG_ENTRY1("Uploading log file result: %s", result.str());
+	LOG_ENTRY1("Uploading log file result: %s", result.str().c_str());
 }
 
 static bool CmpFileTime(const WIN32_FIND_DATA &left, const WIN32_FIND_DATA &right)
@@ -735,7 +721,7 @@ void Bootstrapper::parseCmdLine()
 		std::map<std::wstring, std::wstring> argMap;
 		for (unsigned int i = 0; i < argList.size(); i++)
 		{
-			int separatorPos = argList[i].find(_T(":"));
+			size_t separatorPos = argList[i].find(_T(":"));
 			if (separatorPos != std::string::npos)
 			{
 				std::wstring argName = argList[i].substr(0, separatorPos);
@@ -762,7 +748,7 @@ void Bootstrapper::parseCmdLine()
 		iter = argMap.find(_T("launchtime"));
 		if (iter != argMap.end())
 		{
-			int64_t lt = boost::lexical_cast<int64_t>(iter->second);
+			int64_t lt = std::stoll(iter->second);
 			
 			boost::posix_time::ptime const epoch(boost::gregorian::date(1970, 1, 1));
 			int64_t ct = (boost::posix_time::microsec_clock::universal_time() - epoch).total_milliseconds();
@@ -914,9 +900,9 @@ bool Bootstrapper::hasSse2()
 	return (featureBits & (1 << kSse2BitLoc)) != 0;
 }
 
-boost::shared_ptr<Bootstrapper> Bootstrapper::Create(HINSTANCE hInstance, Bootstrapper*(*newBootstrapper)(HINSTANCE))
+std::shared_ptr<Bootstrapper> Bootstrapper::Create(HINSTANCE hInstance, Bootstrapper*(*newBootstrapper)(HINSTANCE))
 {
-	boost::shared_ptr<Bootstrapper> result(newBootstrapper(hInstance));
+	std::shared_ptr<Bootstrapper> result(newBootstrapper(hInstance));
 
 	result->initialize();
 
@@ -1344,7 +1330,7 @@ std::string Bootstrapper::fetchVersionGuidFromWeb(std::string product)
 {
 	if (GetUseNewVersionFetch() && BinaryType() != "")
 	{
-		//std::ostrstream result;
+		//std::ostringstream result;
 		//HttpTools::httpGet(this, BaseHost(), "/game/ClientVersion.ashx", std::string(), result, false, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 		//result << (char) 0;
 		//return result.str();
@@ -1360,13 +1346,13 @@ std::string Bootstrapper::fetchVersionGuidFromWeb(std::string product)
 	}
 	else
 	{
-		std::ostrstream result;
+		std::ostringstream result;
 		std::string vsubpath = "/" + product + "?guid%d";
 		std::string eTag;
 		HttpTools::httpGet(this, installHost, format_string(vsubpath.c_str(), reportStatGuid), eTag, result, false, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 		result << (char) 0;
 
-		return result.str();
+		return result.str().c_str();
 	}
 }
 
@@ -1397,11 +1383,12 @@ bool Bootstrapper::checkBootstrapperVersion()
 	std::string bootstrapperVersion;
 	try
 	{
-		std::ostrstream result;
+		std::ostringstream result;
 		std::string eTag;
 		HttpTools::httpGet(this, installHost, format_string("/%s-%S", installVersion.c_str(), GetVersionFileName()), eTag, result, false, boost::bind(&Bootstrapper::dummyProgress, _1, _2));
 		result << (char) 0;
-		bootstrapperVersion = result.str();
+		bootstrapperVersion = result.str().c_str();
+
 	}
 	catch (cancel_exception&)
 	{
@@ -1620,18 +1607,6 @@ void Bootstrapper::checkOSPrerequisit()
 {
 	LOG_ENTRY("checkOSPrerequisit");
 	// https://msdn.microsoft.com/en-us/library/ms725491(VS.85).aspx
-
-	{
-		OSVERSIONINFOEX osvi = {0};
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-		GetVersionEx((OSVERSIONINFO*)&osvi);
-		LOG_ENTRY1("OSVERSIONINFO.dwMajorVersion %d", osvi.dwMajorVersion);
-		LOG_ENTRY1("OSVERSIONINFO.wServicePackMajor %d", osvi.wServicePackMajor);
-		LOG_ENTRY1("OSVERSIONINFO.wServicePackMajor %d", osvi.wServicePackMajor);
-		LOG_ENTRY1("OSVERSIONINFO.wServicePackMinor %d", osvi.wServicePackMinor);
-		LOG_ENTRY1("OSVERSIONINFO.dwBuildNumber %d", osvi.dwBuildNumber);
-		LOG_ENTRY1("OSVERSIONINFO.dwPlatformId %d", osvi.dwPlatformId);
-	}
 
 	// Initialize the condition mask.
 
@@ -2236,7 +2211,7 @@ void Bootstrapper::run()
 
 done:
 	{
-		boost::lock_guard<boost::mutex> lock(mut);
+		boost::lock_guard<std::mutex> lock(mut);
 		done.notify_all();
 	}
 

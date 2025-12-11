@@ -39,7 +39,7 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CLOSE:
 		EndDialog(hDlg, LOWORD(wParam));
-		if (dialog && !dialog->closeCallback.empty())
+		if (dialog && dialog->closeCallback)
 			dialog->closeCallback();
 		return (INT_PTR)TRUE;
 
@@ -47,7 +47,7 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		if (LOWORD(wParam) == IDCANCEL)
 		{
 			EndDialog(hDlg, LOWORD(wParam));
-			if (dialog && !dialog->closeCallback.empty())
+			if (dialog && dialog->closeCallback)
 				dialog->closeCallback();
 			return (INT_PTR)TRUE;
 		}
@@ -56,7 +56,7 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_PROGRESS:
 		{
 			HWND prog = ::GetDlgItem(hDlg, IDC_PROGRESS);
-			DWORD style = GetWindowLongPtr(prog, GWL_STYLE);
+			LONG_PTR style = GetWindowLongPtr(prog, GWL_STYLE);
 			if ((style & PBS_MARQUEE) == 0)
 				::SendMessage(prog, PBM_SETPOS, wParam, 0);
 		}
@@ -65,7 +65,7 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_MARQUEE:
 		{
 			HWND prog = ::GetDlgItem(hDlg, IDC_PROGRESS);
-			DWORD style = GetWindowLongPtr(prog, GWL_STYLE);
+			LONG_PTR style = GetWindowLongPtr(prog, GWL_STYLE);
 			if (wParam)
 			{
 				if ((style & PBS_MARQUEE) == 0)

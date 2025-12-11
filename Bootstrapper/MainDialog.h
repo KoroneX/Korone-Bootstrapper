@@ -1,6 +1,7 @@
 #pragma once
 
-#include "boost/function.hpp"
+#include <functional>
+#include <string>
 
 class CMainDialog
 {
@@ -13,7 +14,7 @@ public:
 		showWindowKey = 0; 
 	}
 	virtual ~CMainDialog() {}
-	boost::function<void()> closeCallback;
+	std::function<void()> closeCallback;
 	virtual int MessageBox(LPCWSTR lpText, LPCWSTR lpCaption, UINT uType) = 0;
 	virtual HWND GetHWnd() const = 0;
 	

@@ -2,7 +2,6 @@
 
 #include "RobloxServicesTools.h"
 #include "format_string.h"
-#include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
 
 
@@ -86,16 +85,6 @@ std::string GetClientVersionUploadUrl(const std::string &baseUrl, const std::str
 	return BuildGenericApiUrl(baseUrl, "versioncompatibility", "GetCurrentClientVersionUpload", key);
 }
 
-std::string GetGridUrl(const std::string &anyUrl, bool changeToDataDomain)
-{
-    std::string url = trim_trailing_slashes(anyUrl);
-	if (changeToDataDomain)
-		url = ReplaceTopSubdomain(url, "data");
-
-    url = url + "/Error/Grid.ashx";
-    return url;
-}
-
 std::string GetDmpUrl(const std::string &anyUrl, bool changeToDataDomain)
 {
     std::string url = trim_trailing_slashes(anyUrl);
@@ -103,16 +92,6 @@ std::string GetDmpUrl(const std::string &anyUrl, bool changeToDataDomain)
 		url = ReplaceTopSubdomain(url, "data");
     
 	url = url + "/Error/Dmp.ashx";
-    return url;
-}
-
-std::string GetBreakpadUrl(const std::string &anyUrl, bool changeToDataDomain)
-{
-    std::string url = trim_trailing_slashes(anyUrl);
-	if (changeToDataDomain)
-		url = ReplaceTopSubdomain(url, "data");
-
-	url = url + "/Error/Breakpad.ashx";
     return url;
 }
 
@@ -129,35 +108,5 @@ std::string ReplaceTopSubdomain(const std::string& anyUrl, const char* newTopSub
         result.replace(foundPos, 1, newTopSubDoman);
     }
     return result;
-}
-
-std::string BuildGenericPersistenceUrl(const std::string& baseUrl, const std::string &servicePath)
-{
-    std::string constructedURLDomain(baseUrl);
-    std::string constructedServicePath(servicePath);
-
-	constructedURLDomain = ReplaceTopSubdomain(constructedURLDomain, "gamepersistence");
-    if (!boost::algorithm::ends_with(constructedURLDomain, "/"))
-    {
-        constructedURLDomain.append("/");
-    }
-    return constructedURLDomain + constructedServicePath + "/" ;
-}
-
-std::string BuildGenericGameUrl(const std::string& baseUrl, const std::string &servicePath)
-{
-    std::string constructedURLDomain(baseUrl);
-    std::string constructedServicePath(servicePath);
-	
-	constructedURLDomain = ReplaceTopSubdomain(constructedURLDomain, "assetgame");
-    if (!boost::algorithm::ends_with(constructedURLDomain, "/"))
-    {
-        constructedURLDomain.append("/");
-    }
-    if (boost::algorithm::starts_with(constructedServicePath, "/"))
-    {
-        constructedServicePath.erase(constructedServicePath.begin());
-    }
-    return constructedURLDomain + constructedServicePath;
 }
 

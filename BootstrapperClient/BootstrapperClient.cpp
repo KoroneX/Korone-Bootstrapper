@@ -7,7 +7,7 @@
 #include <comdef.h>
 #include <taskschd.h>
 #include <mstask.h>
-#include <boost/function.hpp>
+#include <functional>
 #include <ostream>
 #include <fstream>
 #include <strstream>
@@ -22,6 +22,7 @@
 #include "StringConv.h"
 #include "ClientProgressDialog.h"
 #include "RobloxServicesTools.h"
+#include <VersionHelpers.h>
 
 static const TCHAR* BootstrapperFileName    = _T("PekoraPlayerLauncher.exe");
 static const TCHAR* RobloxAppFileName		= _T(PLAYEREXENAME);
@@ -408,18 +409,13 @@ HRESULT BootstrapperClient::SheduleRobloxUpdater()
 		return S_OK;
 	}
 
-	OSVERSIONINFO osver = {0};
-
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	::GetVersionEx(&osver);
-
-	if (osver.dwMajorVersion == 5)
-	{
-		return SheduleTaskWinXP();
-	}
-	else if (osver.dwMajorVersion >= 6)
+	if (IsWindowsVistaOrGreater())
 	{
 		return SheduleTaskWinVista();
+	}
+	else if (IsWindowsXPOrGreater())
+	{
+		return SheduleTaskWinXP();
 	}
 
 	return S_OK;
@@ -427,26 +423,10 @@ HRESULT BootstrapperClient::SheduleRobloxUpdater()
 
 HRESULT BootstrapperClient::UninstallRobloxUpdater()
 {
-	OSVERSIONINFO osver = {0};
 	HRESULT hr = S_OK;
 
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	::GetVersionEx(&osver);
-
-	if (osver.dwMajorVersion == 5)
+	if (IsWindowsVistaOrGreater())
 	{
-		CComPtr<ITaskScheduler> scheduler;
-		hr = CoCreateInstance(CLSID_CTaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskScheduler, (void **)&scheduler);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
-
-		hr = scheduler->Delete(robloxUpdaterTaskName);
-	}
-	else if (osver.dwMajorVersion >= 6)
-	{
-
 		CComPtr<ITaskService> service;
 		hr = CoCreateInstance(CLSID_TaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskService, (void**)&service);
 		if (FAILED(hr))
@@ -460,13 +440,24 @@ HRESULT BootstrapperClient::UninstallRobloxUpdater()
 		}
 
 		CComPtr<ITaskFolder> rootFolder;
-		hr = service->GetFolder(_bstr_t( L"\\"), &rootFolder);
+		hr = service->GetFolder(_bstr_t(L"\\"), &rootFolder);
 		if (FAILED(hr))
 		{
 			return hr;
 		}
 
 		hr = rootFolder->DeleteTask(_bstr_t(robloxUpdaterTaskName), 0);
+	}
+	else if (IsWindowsXPOrGreater())
+	{
+		CComPtr<ITaskScheduler> scheduler;
+		hr = CoCreateInstance(CLSID_CTaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskScheduler, (void**)&scheduler);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		hr = scheduler->Delete(robloxUpdaterTaskName);
 	}
 
 	return hr;
@@ -572,7 +563,7 @@ bool BootstrapperClient::ProcessProtocolHandlerArgs(const std::map<std::wstring,
 	if (launchMode == _T("play"))
 	{
 		robloxAppArgs = _T("play");
-		playArgs.reset(new PlayArgs());
+		playArgs = std::make_unique<PlayArgs>();
 
 		playArgs->launchMode = SharedLauncher::Play;
 		LOG_ENTRY("BootstrapperClient::ProcessProtocolHandlerArgs - option: play");
@@ -627,7 +618,7 @@ bool BootstrapperClient::ProcessArg(wchar_t** args, int &pos, int count)
 		LOG_ENTRY("BootstrapperClient::ProcessArg - started");
 		RegisterEvent(_T("BootstrapperPlayStarted"));
 		robloxAppArgs = _T("play");
-		playArgs.reset(new PlayArgs());
+		playArgs = std::make_unique<PlayArgs>();
 
 		// first, lets set the kind of play we are dealing with
 		playArgs->launchMode = SharedLauncher::Play;
@@ -1248,7 +1239,7 @@ void BootstrapperClient::RegisterEvent(const TCHAR *eventName)
 void BootstrapperClient::initialize()
 {
 	LOG_ENTRY("BootstrapperClient::initialize");
-	counters.reset(new CountersClient(BaseHost(), "76E5A40C-3AE1-4028-9F10-7C62520BD94F", &logger));
+	counters = std::make_unique<CountersClient>(BaseHost(), "76E5A40C-3AE1-4028-9F10-7C62520BD94F", &logger);
 
 	{
 		proxyModule.appName = "RobloxProxy";
@@ -1278,7 +1269,7 @@ void BootstrapperClient::initialize()
 
 void BootstrapperClient::createDialog()
 {
-	dialog.reset(new CClientProgressDialog(hInstance, this));
+	dialog = std::make_unique<CClientProgressDialog>(hInstance, this);
 	dialog->InitDialog();
 }
 

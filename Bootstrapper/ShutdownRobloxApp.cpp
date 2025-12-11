@@ -10,7 +10,6 @@
 #include <Psapi.h>
 #include <string>
 #include <boost/bind.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #pragma comment (lib,"Psapi.lib")
 
@@ -29,11 +28,11 @@ struct TerminateAppEnumData
 	TCHAR windowTitle[256];
 };
 
-BOOL CALLBACK TerminateAppEnum( HWND hwnd, DWORD lParam )
+BOOL CALLBACK TerminateAppEnum( HWND hwnd, LPARAM lParam )
 {
 	DWORD dwID;
 	GetWindowThreadProcessId(hwnd, &dwID);
-	TerminateAppEnumData* data = (TerminateAppEnumData*) lParam;
+	TerminateAppEnumData* data = (TerminateAppEnumData*)lParam;
 	if (dwID == data->pid)
 		if (::IsWindowVisible(hwnd))
 		{
@@ -75,7 +74,7 @@ void ShutdownRobloxApp::terminateApp(DWORD pid)
 		}
 		if (!processClosed)
 		{
-			boost::scoped_ptr<CShutdownDialog> dialog(CShutdownDialog::Create(hInstance, parent(), data.windowTitle));
+			std::unique_ptr<CShutdownDialog> dialog(CShutdownDialog::Create(hInstance, parent(), data.windowTitle));
 			if (dialog)
 				while (!processClosed)
 				{

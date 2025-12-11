@@ -51,27 +51,16 @@ MODIFICATIONS:
 
 #include "stdafx.h"
 #include <stdexcept>
-
-
-
 #include <assert.h>
 #include <string>
 #include <comdef.h>
 #include <taskschd.h>
+#include <VersionHelpers.h>
 
 
 bool IsVistaPlus()
 {
-	OSVERSIONINFO osver = {0};
-
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	
-	if (	::GetVersionEx( &osver ) && 
-			osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-			(osver.dwMajorVersion >= 6 ) )
-		return true;
-
-	return false;
+	return IsWindowsVistaOrGreater();
 }
 
 bool Is64BitWindows() 

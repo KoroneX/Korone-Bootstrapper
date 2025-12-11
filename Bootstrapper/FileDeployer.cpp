@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/bind.hpp>
 
 #include "FileDeployer.h"
