@@ -145,8 +145,8 @@ BEGIN
             VALUE "FileDescription", "Korone"
             VALUE "FileVersion", "1, 7, 0, 0"
             VALUE "LegalCopyright", "(C) 2025 Korone Corporation.  All rights reserved."
-            VALUE "OriginalFilename", "Pekora.exe"
-            VALUE "ProductName", "Pekora Bootstrapper"
+            VALUE "OriginalFilename", "Korone.exe"
+            VALUE "ProductName", "Korone Bootstrapper"
             VALUE "ProductVersion", "1, 7, 0, 0"
         END
     END

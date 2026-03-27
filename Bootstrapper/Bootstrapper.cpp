@@ -178,7 +178,7 @@ public:
 				else
 				{
 					CString message;
-					message.Format(_T("An error occured and Pekora cannot continue.\n\n%S"), e.what());
+					message.Format(_T("An error occured and Korone cannot continue.\n\n%S"), e.what());
 					::MessageBox(NULL, message, _T("Error"), MB_OK | MB_ICONEXCLAMATION);
 				}
 				result = -1;
@@ -919,7 +919,7 @@ std::shared_ptr<Bootstrapper> Bootstrapper::Create(HINSTANCE hInstance, Bootstra
 			CTimedMutexLock l1(m1);
 			if (l1.Lock(1) == WAIT_TIMEOUT)
 			{
-				LLOG_ENTRY(result->logger, "No bg update, Pekora App is running");
+				LLOG_ENTRY(result->logger, "No bg update, Korone App is running");
 				return result;
 			}
 
@@ -1044,7 +1044,7 @@ void Bootstrapper::RegisterUninstall(const TCHAR *productName)
 	
 	std::wstring uninstallString = format_string(_T("\"%s%s\" -uninstall%s"), programDirectory().c_str(), GetBootstrapperFileName().c_str(), perUser ? _T("") : _T(" -alluser"));
 	throwHRESULT (keyProductCode->SetStringValue(_T("UninstallString"), uninstallString.c_str(), REG_EXPAND_SZ), "Failed to set UninstallString key");
-	throwHRESULT (keyProductCode->SetStringValue(_T("Publisher"), _T("Pekora Corporation")), "Failed to set Publisher key");
+	throwHRESULT (keyProductCode->SetStringValue(_T("Publisher"), _T("Korone Corporation")), "Failed to set Publisher key");
 	throwHRESULT (keyProductCode->SetStringValue(_T("URLInfoAbout"), _T("https://pekora.zip")), "Failed to set URLInfoAbout key");
 	throwHRESULT (keyProductCode->SetStringValue(_T("Comments"), convert_s2w(installVersion).c_str()), "Failed to set Comments key");
 	throwHRESULT (keyProductCode->SetStringValue(_T("InstallLocation"), programDirectory().c_str()), "Failed to set InstallLocation key");
@@ -1091,7 +1091,7 @@ void Bootstrapper::RegisterProtocolHandler(const std::wstring& protocolScheme, c
 
 	// register the protocol handler scheme
 	auto key = CreateKey(isPerUser() ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE, (_T("SOFTWARE\\Classes\\") + protocolScheme).c_str());
-	throwHRESULT(key->SetStringValue(_T(""), _T("URL: Pekora Protocol")), format_string("failed to set value for protocol"));
+	throwHRESULT(key->SetStringValue(_T(""), _T("URL: Pekora Protocol")), format_string("failed to set value for protocol")); // STILL HAVE TO USE PEKORA PROTOCOL because devs didnt rebrand it
 	throwHRESULT(key->SetStringValue(_T("URL Protocol"), _T("")), format_string("failed to set value for protocol"));
 
 	CreateKey(key->m_hKey, _T("DefaultIcon"), exePath.c_str());
@@ -1365,7 +1365,7 @@ bool Bootstrapper::checkBootstrapperVersion()
 	moduleVersionNumber = vi.GetFileVersionAsString();
 	LOG_ENTRY1("module file version: %s", moduleVersionNumber.c_str());
 
-	message("Connecting to Pekora...");
+	message("Connecting to Korone...");
 	try
 	{
 		installVersion = fetchVersionGuid(); // TODO: Why is this setting the installVersion?
@@ -1449,7 +1449,7 @@ bool Bootstrapper::checkBootstrapperVersion()
 
 			try
 			{
-				message("Getting the latest Pekora...");
+				message("Getting the latest Korone...");
 
 				// We could use an "exe" extension, but hiding the type isn't a bad idea?
 				newBootstrapper = simple_logger<wchar_t>::get_temp_filename(_T("tmp"));
@@ -1468,7 +1468,7 @@ bool Bootstrapper::checkBootstrapperVersion()
 					std::ofstream bootstrapperFile(newBootstrapper.c_str(), std::ios::binary);
 					// this we might need during rollback, lets be on safe side
 					std::string eTag;
-					HttpTools::httpGetCdn(this, installHost, format_string("/%s-Pekora.exe", installVersion.c_str()), eTag, bootstrapperFile, false, &Bootstrapper::dummyProgress);
+					HttpTools::httpGetCdn(this, installHost, format_string("/%s-Korone.exe", installVersion.c_str()), eTag, bootstrapperFile, false, &Bootstrapper::dummyProgress);
 				}
 			}
 
@@ -1497,7 +1497,7 @@ bool Bootstrapper::checkBootstrapperVersion()
 
 void Bootstrapper::writeAppSettings()
 {
-	message("Configuring Pekora...");
+	message("Configuring Korone...");
 
 	std::wstring appSettings(programDirectory() + _T("AppSettings.xml"));
 	std::ofstream file(appSettings.c_str());
@@ -1834,7 +1834,7 @@ void Bootstrapper::checkDiskSpace()
 	::GetDiskFreeSpaceEx(programDirectory().c_str(), &freeBytesAvailableToCaller, NULL, NULL);
 	if (freeBytesAvailableToCaller.QuadPart < 40*1e6)
 	{
-		dialog->DisplayError("There is not enough room on your disk to install Pekora. Please free up some space and try again.", NULL);
+		dialog->DisplayError("There is not enough room on your disk to install Korone. Please free up some space and try again.", NULL);
 		throw installer_error_exception(installer_error_exception::DiskSpacePrerequisite);
 	}
 }
@@ -1930,10 +1930,10 @@ void Bootstrapper::run()
 
 			if (windowed && isLatestProcess())
 			{
-				CString message = _T("Cannot connect to the Pekora.\n\nIs antivirus software preventing Pekora from accessing the Internet?");
+				CString message = _T("Cannot connect to the Korone.\n\nIs antivirus software preventing Korone from accessing the Internet?");
 				if (!robloxAppArgs.empty())
 				{
-					message += _T("\n\nIf you continue Pekora may not work properly.");
+					message += _T("\n\nIf you continue Korone may not work properly.");
 					if (dialog->MessageBox(message, _T("Error"), MB_OKCANCEL | MB_ICONEXCLAMATION) == IDOK)
 					{
 						installVersion = queryInstalledVersion();
@@ -2683,7 +2683,7 @@ void Bootstrapper::install()
 			if (!perUser && !IsAdminRunning())
 			{
 				if (windowed)
-					dialog->DisplayError("On this machine you must install Pekora using an Administrator account", NULL);
+					dialog->DisplayError("On this machine you must install Korone using an Administrator account", NULL);
 				throw installer_error_exception(installer_error_exception::AdminAccountRequired);
 			}
 		}
@@ -2869,64 +2869,84 @@ void Bootstrapper::progressBar(int pos, int max)
 
 void Bootstrapper::forceUninstallMFCStudio()
 {
-    LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio");
+	LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio");
 
-    // check if Studio is installed
-    if ( !isInstalled(getStudioInstallKey()) )
-    {
-        forceMFCStudioCleanup();
-        LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio - not installed");
-        return;
-    }
+	// check if Studio is installed, else what are we even doing here?
+	if (!isInstalled(getStudioInstallKey()))
+	{
+		forceMFCStudioCleanup();
+		LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio - not installed");
+		return;
+	}
 
-    // find the uninstall registry key
-    CRegKey key;
-    if ( key.Open(
-            perUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
-            getStudioInstallKey().c_str(), 
-            KEY_READ ) != ERROR_SUCCESS )
-    {
-        LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio - failed to find install key");
-        return;
-    }
+	// find the uninstall registry key
+	CRegKey key;
+	if (key.Open(
+		perUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
+		getStudioInstallKey().c_str(),
+		KEY_READ) != ERROR_SUCCESS)
+	{
+		LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio - failed to find install key");
+		return;
+	}
 
-    // get the uninstall command
-    TCHAR value[512];
-	ULONG length = sizeof(value) / sizeof(TCHAR);
-    if ( key.QueryStringValue(_T("UninstallString"),value,&length) != ERROR_SUCCESS )
-    {
-        LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio - failed to find uninstall string");
-        return;
-    }
+	// get the uninstall command and use two-stage read to handle large registry values so no buffer overflow
+	TCHAR buffer[256]; // main line that can cause buffer overflow
+	ULONG length = sizeof(buffer) / sizeof(TCHAR);
+	LONG lRes = key.QueryStringValue(_T("UninstallString"), buffer, &length);
 
-    // run the command
-    std::wstring uninstall_path = value;
-    if ( !uninstall_path.empty() )
-    {
-        LOG_ENTRY1(
-            "Bootstrapper::forceUninstallMFCStudio - path: %S",
-            uninstall_path.c_str() );
+	std::wstring uninstall_path;
 
-        // do this before you execute the uninstall or you'll lose the keys
-        std::string version = queryInstalledVersion(getStudioRegistryPath());
-        std::wstring filePath = getInstalledBootstrapperPath(getStudioRegistryPath());
+	if (lRes == ERROR_MORE_DATA)
+	{
+		// the uninstall string is larger than our buffer, so resize and read again
+		if (length > 4096)
+		{
+			LOG_ENTRY1("Bootstrapper::forceUninstallMFCStudio - UninstallString exceeds safe limit: %u", length);
+			return;
+		}
 
-        // execute command
-        CProcessInformation pi;
-	    CreateProcess(uninstall_path.c_str(),_T(""),pi); // Launch the uninstaller RobloxStudio.exe -uninstall
+		uninstall_path.resize(length);
+		lRes = key.QueryStringValue(_T("UninstallString"), &uninstall_path[0], &length);
+		if (lRes != ERROR_SUCCESS)
+		{
+			LOG_ENTRY1("Bootstrapper::forceUninstallMFCStudio - failed to read UninstallString: 0x%x", lRes);
+			return;
+		}
+	}
+	else if (lRes == ERROR_SUCCESS)
+	{
+		uninstall_path = buffer;
+	}
+	else
+	{
+		LOG_ENTRY("Bootstrapper::forceUninstallMFCStudio - failed to find uninstall string");
+		return;
+	}
 
-        // make sure the stub is deleted
-        LOG_ENTRY1("Bootstrapper::forceUninstallMFCStudio - deleting studio stub: %S",filePath.c_str());
-	    ::DeleteFile(filePath.c_str());
+	// run the command
+	if (!uninstall_path.empty())
+	{
+		LOG_ENTRY1(
+			"Bootstrapper::forceUninstallMFCStudio - path: %S",
+			uninstall_path.c_str());
 
-        // delete empty directory
-        std::wstring basePath = baseProgramDirectory(isPerUser());
-        std::wstring path = basePath + convert_s2w(version);
-        LOG_ENTRY1("Bootstrapper::forceUninstallMFCStudio - deleting studio directory: %S",path.c_str());
-        deleteVersionFolder(convert_w2s(path));
-    }
+		// do this before you execute the uninstall or you'll lose the keys
+		std::string version = queryInstalledVersion(getStudioRegistryPath());
+		std::wstring filePath = getInstalledBootstrapperPath(getStudioRegistryPath());
 
-    forceMFCStudioCleanup();
+		CProcessInformation pi;
+		CreateProcess(uninstall_path.c_str(), _T(""), pi);
+
+		LOG_ENTRY1("Bootstrapper::forceUninstallMFCStudio - deleting studio stub: %S", filePath.c_str());
+		::DeleteFile(filePath.c_str());
+
+		std::wstring basePath = baseProgramDirectory(isPerUser());
+		std::wstring path = basePath + convert_s2w(version);
+		LOG_ENTRY1("Bootstrapper::forceUninstallMFCStudio - deleting studio directory: %S", path.c_str());
+		deleteVersionFolder(convert_w2s(path));
+	}
+	forceMFCStudioCleanup();
 }
 
 void Bootstrapper::forceMFCStudioCleanup()
