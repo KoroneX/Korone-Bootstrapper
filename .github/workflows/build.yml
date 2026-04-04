@@ -194,3 +194,23 @@ jobs:
         asset_path: PekoraPlayerLauncher-x64.zip
         asset_name: PekoraPlayerLauncher-x64.zip
         asset_content_type: application/zip
+    - name: Upload Release Asset (x86 EXE)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: BootstrapperClient\bin\Release\Win32\PekoraPlayerLauncher.exe
+        asset_name: PekoraPlayerLauncher-x86.exe
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset (x64 EXE)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: BootstrapperClient\bin\Release\x64\PekoraPlayerLauncher.exe
+        asset_name: PekoraPlayerLauncher-x64.exe
+        asset_content_type: application/octet-stream
